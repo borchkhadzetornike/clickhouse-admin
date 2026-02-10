@@ -83,10 +83,13 @@ def list_users(
         host_ip = info.get("host_ip", [])
         if isinstance(host_ip, str):
             host_ip = json.loads(host_ip)
+        auth_type = info.get("auth_type")
+        if isinstance(auth_type, list):
+            auth_type = ", ".join(str(a) for a in auth_type)
         result.append(
             CHUserSummary(
                 name=name,
-                auth_type=info.get("auth_type"),
+                auth_type=auth_type,
                 host_ip=host_ip if isinstance(host_ip, list) else [],
                 role_count=len(roles),
                 direct_grant_count=len(direct_grants),
@@ -121,11 +124,15 @@ def get_user_detail(
     if isinstance(default_roles_list, str):
         default_roles_list = json.loads(default_roles_list)
 
+    auth_type = info.get("auth_type")
+    if isinstance(auth_type, list):
+        auth_type = ", ".join(str(a) for a in auth_type)
+
     settings_profiles = graph.user_settings_profiles(name)
 
     return CHUserDetail(
         name=name,
-        auth_type=info.get("auth_type"),
+        auth_type=auth_type,
         host_ip=host_ip if isinstance(host_ip, list) else [],
         default_roles_all=bool(info.get("default_roles_all", 0)),
         default_roles=default_roles_list if isinstance(default_roles_list, list) else [],
