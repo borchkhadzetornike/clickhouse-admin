@@ -1,0 +1,77 @@
+services:
+  # ── Databases ────────────────────────────────────────────
+
+  postgres-auth:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_auth_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-governance:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: governance_db
+      POSTGRES_USER: gov_user
+      POSTGRES_PASSWORD: gov_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_gov_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gov_user -d governance_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend services ─────────────────────────────────────
+
+  auth-service:
+    build: ./apps/auth-service
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgresql://auth_user:auth_pass@postgres-auth:5432/auth_db
+      JWT_SECRET: super-secret-jwt-key-change-in-production
+      JWT_EXPIRATION_MINUTES: "60"
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+    restart: unless-stopped
+
+  governance-service:
+    build: ./apps/governance-service
+    ports:
+      - "4001:4001"
+    environment:
+      DATABASE_URL: postgresql://gov_user:gov_pass@postgres-governance:5432/governance_db
+      JWT_SECRET: super-secret-jwt-key-change-in-production
+      ENCRYPTION_KEY: "0123456789abcdef0123456789abcdef"
+    depends_on:
+      postgres-governance:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Frontend ─────────────────────────────────────────────
+
+  ui:
+    build: ./apps/ui
+    ports:
+      - "3000:80"
+    depends_on:
+      - auth-service
+      - governance-service
+    restart: unless-stopped
+
+volumes:
+  pg_auth_data:
+  pg_gov_data:
