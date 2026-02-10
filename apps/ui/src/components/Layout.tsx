@@ -15,6 +15,7 @@ export default function Layout() {
     { to: "/clusters", label: "Clusters" },
     { to: "/explorer", label: "Explorer" },
     { to: "/proposals", label: "Proposals" },
+    { to: "/admin-console", label: "Admin", roles: ["admin", "editor"] },
     { to: "/rbac", label: "RBAC" },
     { to: "/snapshots", label: "Snapshots" },
     { to: "/users", label: "Users", roles: ["admin"] },

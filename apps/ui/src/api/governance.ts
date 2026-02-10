@@ -38,7 +38,7 @@ export const getTables = (clusterId: number, db: string) =>
 export const getColumns = (clusterId: number, db: string, table: string) =>
   api.get(`/clusters/${clusterId}/columns`, { params: { db, table } });
 
-// ── Proposals ───────────────────────────────────────────
+// ── Proposals (Phase 3 — multi-operation) ───────────────
 
 export const getProposals = () => api.get("/proposals");
 
@@ -46,19 +46,37 @@ export const getProposal = (id: number) => api.get(`/proposals/${id}`);
 
 export const createProposal = (data: {
   cluster_id: number;
+  title: string;
+  operations: { operation_type: string; params: Record<string, unknown> }[];
+  reason?: string;
+  is_elevated?: boolean;
+  description?: string;
+}) => api.post("/proposals", data);
+
+export const createLegacyProposal = (data: {
+  cluster_id: number;
   proposal_type: string;
   db: string;
   table: string;
   target_type: string;
   target_name: string;
   reason?: string;
-}) => api.post("/proposals", data);
+}) => api.post("/proposals/legacy", data);
 
 export const approveProposal = (id: number, comment?: string) =>
   api.post(`/proposals/${id}/approve`, { comment: comment || null });
 
 export const rejectProposal = (id: number, comment?: string) =>
   api.post(`/proposals/${id}/reject`, { comment: comment || null });
+
+export const dryRunProposal = (id: number) =>
+  api.post(`/proposals/${id}/dry-run`);
+
+export const executeProposal = (id: number) =>
+  api.post(`/proposals/${id}/execute`);
+
+export const getProposalJobs = (id: number) =>
+  api.get(`/proposals/${id}/jobs`);
 
 // ── Audit ───────────────────────────────────────────────
 
@@ -113,5 +131,39 @@ export const getObjectAccess = (
     params: { cluster_id: clusterId, ...(snapshotId ? { snapshot_id: snapshotId } : {}) },
   });
 };
+
+// ── Admin (Phase 3) ─────────────────────────────────────
+
+export const getAdminUsers = (clusterId: number) =>
+  api.get("/admin/users", { params: { cluster_id: clusterId } });
+
+export const getAdminUserHistory = (username: string, clusterId: number) =>
+  api.get(`/admin/users/${encodeURIComponent(username)}/history`, {
+    params: { cluster_id: clusterId },
+  });
+
+export const getAdminRoles = (clusterId: number) =>
+  api.get("/admin/roles", { params: { cluster_id: clusterId } });
+
+export const getAdminRoleHistory = (roleName: string, clusterId: number) =>
+  api.get(`/admin/roles/${encodeURIComponent(roleName)}/history`, {
+    params: { cluster_id: clusterId },
+  });
+
+export const getSettingsProfiles = (clusterId: number) =>
+  api.get("/admin/settings-profiles", { params: { cluster_id: clusterId } });
+
+export const getProfileHistory = (name: string, clusterId: number) =>
+  api.get(`/admin/settings-profiles/${encodeURIComponent(name)}/history`, {
+    params: { cluster_id: clusterId },
+  });
+
+export const getQuotas = (clusterId: number) =>
+  api.get("/admin/quotas", { params: { cluster_id: clusterId } });
+
+export const getQuotaHistory = (name: string, clusterId: number) =>
+  api.get(`/admin/quotas/${encodeURIComponent(name)}/history`, {
+    params: { cluster_id: clusterId },
+  });
 
 export default api;

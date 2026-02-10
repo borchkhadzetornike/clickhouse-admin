@@ -11,11 +11,16 @@ class ProposalStatus(str, enum.Enum):
     submitted = "submitted"
     approved = "approved"
     rejected = "rejected"
+    executing = "executing"
+    executed = "executed"
+    failed = "failed"
+    partially_executed = "partially_executed"
 
 
 class ProposalType(str, enum.Enum):
     grant_select = "grant_select"
     revoke_select = "revoke_select"
+    multi_operation = "multi_operation"
 
 
 class Cluster(Base):
@@ -43,12 +48,21 @@ class Proposal(Base):
         Enum(ProposalStatus), nullable=False, default=ProposalStatus.submitted
     )
     type = Column(Enum(ProposalType), nullable=False)
-    db_name = Column(String(255), nullable=False)
-    table_name = Column(String(255), nullable=False)
-    target_type = Column(String(50), nullable=False)  # "user" or "role"
-    target_name = Column(String(255), nullable=False)
-    sql_preview = Column(Text, nullable=False)
+    # Phase-1 legacy fields (nullable for Phase-3 multi_operation proposals)
+    db_name = Column(String(255), nullable=True)
+    table_name = Column(String(255), nullable=True)
+    target_type = Column(String(50), nullable=True)
+    target_name = Column(String(255), nullable=True)
+    sql_preview = Column(Text, nullable=True)
     reason = Column(Text, nullable=True)
+    # Phase-3 additions
+    title = Column(String(500), nullable=True)
+    description = Column(Text, nullable=True)
+    is_elevated = Column(Boolean, default=False)
+    compensation_sql = Column(Text, nullable=True)
+    job_id = Column(Integer, nullable=True)
+    executed_by = Column(Integer, nullable=True)
+    executed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -146,3 +160,34 @@ class SnapshotPrivilege(Base):
     column_name = Column(String(255), nullable=True)
     is_partial_revoke = Column(Boolean, default=False)
     grant_option = Column(Boolean, default=False)
+
+
+# ── Phase 3: Proposal Operations & Entity History ─────
+
+class ProposalOperation(Base):
+    __tablename__ = "proposal_operations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    proposal_id = Column(Integer, nullable=False, index=True)
+    order_index = Column(Integer, nullable=False, default=0)
+    operation_type = Column(String(100), nullable=False)
+    params_json = Column(Text, nullable=False)
+    sql_preview = Column(Text, nullable=True)
+    compensation_sql = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class EntityHistory(Base):
+    __tablename__ = "entity_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    cluster_id = Column(Integer, nullable=False, index=True)
+    entity_type = Column(String(100), nullable=False)
+    entity_name = Column(String(255), nullable=False, index=True)
+    action = Column(String(100), nullable=False)
+    details_json = Column(Text, nullable=True)
+    proposal_id = Column(Integer, nullable=True)
+    job_id = Column(Integer, nullable=True)
+    actor_user_id = Column(Integer, nullable=True)
+    approved_by_user_id = Column(Integer, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

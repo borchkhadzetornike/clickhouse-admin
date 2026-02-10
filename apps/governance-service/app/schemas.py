@@ -202,3 +202,133 @@ class SnapshotDiffOut(BaseModel):
     roles: dict = {}
     role_grants: dict = {}
     grants: dict = {}
+
+
+# ── Phase 3: Proposal Operations ─────────────────────
+
+class OperationInput(BaseModel):
+    operation_type: str
+    params: dict
+
+
+class ProposalCreateV2(BaseModel):
+    cluster_id: int
+    title: str
+    operations: List[OperationInput]
+    reason: Optional[str] = None
+    is_elevated: bool = False
+    description: Optional[str] = None
+
+
+class OperationOut(BaseModel):
+    id: int
+    order_index: int
+    operation_type: str
+    params_json: str
+    sql_preview: Optional[str] = None
+    compensation_sql: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ProposalOutV2(BaseModel):
+    id: int
+    cluster_id: int
+    created_by: int
+    status: str
+    type: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    sql_preview: Optional[str] = None
+    compensation_sql: Optional[str] = None
+    reason: Optional[str] = None
+    is_elevated: bool = False
+    job_id: Optional[int] = None
+    executed_by: Optional[int] = None
+    executed_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+    operations: List[OperationOut] = []
+    # Phase-1 legacy fields
+    db_name: Optional[str] = None
+    table_name: Optional[str] = None
+    target_type: Optional[str] = None
+    target_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ── Phase 3: Job results (proxied from executor) ─────
+
+class JobStepOut(BaseModel):
+    step_index: int
+    operation_type: str
+    sql_statement: str
+    compensation_sql: Optional[str] = None
+    status: str
+    result_message: Optional[str] = None
+    executed_at: Optional[datetime] = None
+
+
+class JobOut(BaseModel):
+    id: int
+    proposal_id: int
+    cluster_id: int
+    mode: str
+    status: str
+    error: Optional[str] = None
+    created_at: datetime
+    completed_at: Optional[datetime] = None
+    steps: List[JobStepOut] = []
+
+
+# ── Phase 3: Entity History ──────────────────────────
+
+class EntityHistoryOut(BaseModel):
+    id: int
+    cluster_id: int
+    entity_type: str
+    entity_name: str
+    action: str
+    details_json: Optional[str] = None
+    proposal_id: Optional[int] = None
+    job_id: Optional[int] = None
+    actor_user_id: Optional[int] = None
+    approved_by_user_id: Optional[int] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ── Phase 3: Admin entities ──────────────────────────
+
+class AdminUserOut(BaseModel):
+    name: str
+    auth_type: Optional[str] = None
+    host_ip: List = []
+    roles: List[str] = []
+    default_roles: List[str] = []
+    settings_profiles: List[str] = []
+    quotas: List[str] = []
+
+
+class AdminRoleOut(BaseModel):
+    name: str
+    members: List[str] = []
+    inherited_roles: List[str] = []
+    direct_grants: List[dict] = []
+
+
+class AdminSettingsProfileOut(BaseModel):
+    name: str
+    settings: List[dict] = []
+    assigned_to: List[str] = []
+
+
+class AdminQuotaOut(BaseModel):
+    name: str
+    intervals: List[dict] = []
+    assigned_to: List[str] = []
