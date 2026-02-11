@@ -25,6 +25,9 @@ apps/ui/dist/
 # Docker
 docker-compose.override.yml
 
+# Dev data (demo ClickHouse volumes)
+dev-data/
+
 # Environment
 .env
 

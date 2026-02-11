@@ -20,6 +20,8 @@ from ..schemas import (
     CHRoleSummary,
     CHRoleDetail,
     ObjectAccessOut,
+    RiskIndicator,
+    RiskSummaryOut,
 )
 from ..auth import get_current_user, CurrentUser
 from ..rbac_graph import RBACGraph
@@ -226,3 +228,70 @@ def get_database_access(
 
     entries = graph.object_access(database, None)
     return ObjectAccessOut(database=database, table=None, entries=entries)
+
+
+# ── Risk analysis ────────────────────────────────────────
+
+
+@router.get("/risk-summary", response_model=RiskSummaryOut)
+def get_risk_summary(
+    cluster_id: int = Query(...),
+    snapshot_id: Optional[int] = Query(None),
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    run = _get_snapshot(snapshot_id, cluster_id, db)
+    graph = _build_graph(run)
+    return graph.risk_summary()
+
+
+@router.get("/users/{name}/risks", response_model=List[RiskIndicator])
+def get_user_risks(
+    name: str,
+    cluster_id: int = Query(...),
+    snapshot_id: Optional[int] = Query(None),
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    run = _get_snapshot(snapshot_id, cluster_id, db)
+    graph = _build_graph(run)
+
+    if name not in graph._users:
+        raise HTTPException(status_code=404, detail=f"User '{name}' not found in snapshot")
+
+    return graph.user_risks(name)
+
+
+@router.get("/roles/{name}/effective-privileges")
+def get_role_effective_privileges(
+    name: str,
+    cluster_id: int = Query(...),
+    snapshot_id: Optional[int] = Query(None),
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Compute effective privileges for a role (direct + inherited)."""
+    run = _get_snapshot(snapshot_id, cluster_id, db)
+    graph = _build_graph(run)
+
+    if name not in graph._roles:
+        raise HTTPException(status_code=404, detail=f"Role '{name}' not found in snapshot")
+
+    # Gather direct grants + inherited role grants
+    all_parents = graph.resolve_role_parents(name)
+    parent_lookup = {r["role_name"]: r for r in all_parents}
+
+    privs: list[dict] = []
+    # Direct grants on this role
+    for p in graph._role_grants_map.get(name, []):
+        if not p.get("is_partial_revoke"):
+            privs.append({**p, "source": "direct", "source_name": name, "path": [name]})
+
+    # Grants from inherited roles
+    for parent_info in all_parents:
+        rn = parent_info["role_name"]
+        for p in graph._role_grants_map.get(rn, []):
+            if not p.get("is_partial_revoke"):
+                privs.append({**p, "source": "role", "source_name": rn, "path": parent_info["path"]})
+
+    return privs

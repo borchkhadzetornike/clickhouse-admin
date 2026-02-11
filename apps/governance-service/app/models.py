@@ -35,7 +35,21 @@ class Cluster(Base):
     password_encrypted = Column(Text, nullable=False)
     database = Column(String(255), nullable=True)
     created_by = Column(Integer, nullable=False)
+    is_deleted = Column(Boolean, default=False)
+    # ── Connection test metadata ──
+    status = Column(String(50), nullable=False, server_default="never_tested")
+    last_tested_at = Column(DateTime(timezone=True), nullable=True)
+    latency_ms = Column(Integer, nullable=True)
+    server_version = Column(String(255), nullable=True)
+    current_user_detected = Column(String(255), nullable=True)
+    error_code = Column(String(50), nullable=True)
+    error_message = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
 
 
 class Proposal(Base):

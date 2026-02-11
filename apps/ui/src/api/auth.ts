@@ -28,7 +28,25 @@ export const updateUser = (
   data: { role?: string; is_active?: boolean; password?: string },
 ) => api.patch(`/users/${id}`, data);
 
-export const getAuthAudit = (params?: Record<string, string>) =>
+export const getAuthAudit = (params?: Record<string, string | number>) =>
   api.get("/audit", { params });
+
+export const getAuditEventDetail = (id: number) => api.get(`/audit/${id}`);
+
+// ── Profile endpoints ────────────────────────────────────
+
+export const getProfile = () => api.get("/profile");
+
+export const updateProfile = (data: {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  profile_picture_url?: string | null;
+}) => api.patch("/profile", data);
+
+export const changePassword = (data: {
+  current_password: string;
+  new_password: string;
+}) => api.post("/profile/change-password", data);
 
 export default api;

@@ -24,6 +24,37 @@ export const createCluster = (data: {
   database?: string;
 }) => api.post("/clusters", data);
 
+export const updateCluster = (
+  id: number,
+  data: {
+    name?: string;
+    host?: string;
+    port?: number;
+    protocol?: string;
+    username?: string;
+    password?: string;
+    database?: string;
+  },
+) => api.patch(`/clusters/${id}`, data);
+
+export const deleteCluster = (id: number) => api.delete(`/clusters/${id}`);
+
+export const validateConnection = (data: {
+  host: string;
+  port: number;
+  protocol: string;
+  username: string;
+  password: string;
+  database?: string;
+}) => api.post("/clusters/validate", data);
+
+export const testClusterConnection = (id: number) =>
+  api.post(`/clusters/${id}/test`);
+
+export const getClusterDiagnostics = (id: number) =>
+  api.get(`/clusters/${id}/diagnostics`);
+
+/** @deprecated Use testClusterConnection instead */
 export const testConnection = (id: number) =>
   api.post(`/clusters/${id}/test-connection`);
 
@@ -37,6 +68,16 @@ export const getTables = (clusterId: number, db: string) =>
 
 export const getColumns = (clusterId: number, db: string, table: string) =>
   api.get(`/clusters/${clusterId}/columns`, { params: { db, table } });
+
+export const getTableDetail = (
+  clusterId: number,
+  db: string,
+  table: string,
+  includeSample = false,
+) =>
+  api.get(`/clusters/${clusterId}/table-detail`, {
+    params: { db, table, sample: includeSample },
+  });
 
 // ── Proposals (Phase 3 — multi-operation) ───────────────
 
@@ -131,6 +172,21 @@ export const getObjectAccess = (
     params: { cluster_id: clusterId, ...(snapshotId ? { snapshot_id: snapshotId } : {}) },
   });
 };
+
+export const getRBACRiskSummary = (clusterId: number, snapshotId?: number) =>
+  api.get("/explorer/risk-summary", {
+    params: { cluster_id: clusterId, ...(snapshotId ? { snapshot_id: snapshotId } : {}) },
+  });
+
+export const getRBACUserRisks = (name: string, clusterId: number, snapshotId?: number) =>
+  api.get(`/explorer/users/${encodeURIComponent(name)}/risks`, {
+    params: { cluster_id: clusterId, ...(snapshotId ? { snapshot_id: snapshotId } : {}) },
+  });
+
+export const getRBACRoleEffectivePrivileges = (name: string, clusterId: number, snapshotId?: number) =>
+  api.get(`/explorer/roles/${encodeURIComponent(name)}/effective-privileges`, {
+    params: { cluster_id: clusterId, ...(snapshotId ? { snapshot_id: snapshotId } : {}) },
+  });
 
 // ── Admin (Phase 3) ─────────────────────────────────────
 

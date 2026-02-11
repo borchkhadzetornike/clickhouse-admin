@@ -1,0 +1,59 @@
+# ============================================================
+# Demo ClickHouse — DEV / DEMO ONLY
+# ============================================================
+# Spins up a self-contained ClickHouse instance pre-loaded
+# with demo users, roles, databases, and sample data.
+#
+# Start:
+#   docker compose -f docker-compose.clickhouse.yml up -d
+#
+# Stop:
+#   docker compose -f docker-compose.clickhouse.yml down
+#
+# Reset all data:
+#   docker compose -f docker-compose.clickhouse.yml down -v
+#   rm -rf ./dev-data/clickhouse
+#
+# WARNING: This configuration uses simple credentials and is
+# NOT suitable for production deployments.
+# ============================================================
+
+services:
+  clickhouse-demo:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    container_name: clickhouse-demo
+    ports:
+      - "8123:8123"   # HTTP interface
+      - "9000:9000"   # Native TCP interface
+    environment:
+      CLICKHOUSE_DB: analytics
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: clickhouse
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      # Persistent data across restarts
+      - ./dev-data/clickhouse:/var/lib/clickhouse
+      # Init scripts — executed once on first startup (alphabetical order)
+      - ./dev/clickhouse/init/01_create_database_and_tables.sql:/docker-entrypoint-initdb.d/01_create_database_and_tables.sql:ro
+      - ./dev/clickhouse/init/02_create_roles_and_users.sql:/docker-entrypoint-initdb.d/02_create_roles_and_users.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --password clickhouse --query 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    restart: unless-stopped
+    networks:
+      - clickhouse-demo-net
+
+networks:
+  clickhouse-demo-net:
+    driver: bridge
+    # To allow main-stack services to reach clickhouse-demo by
+    # hostname, add this network to the main compose or use
+    # host.docker.internal from the governance service.
+    # See README for details.

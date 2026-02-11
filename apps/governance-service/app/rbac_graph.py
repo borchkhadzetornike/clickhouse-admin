@@ -230,6 +230,100 @@ class RBACGraph:
                 result.append(sp)
         return result
 
+    # ── risk analysis ─────────────────────────────────────
+
+    ADMIN_PRIVS = {
+        "CREATE USER", "ALTER USER", "DROP USER",
+        "CREATE ROLE", "ALTER ROLE", "DROP ROLE",
+        "GRANT", "SYSTEM", "SYSTEM SHUTDOWN",
+        "CREATE DATABASE", "DROP DATABASE",
+        "KILL QUERY", "KILL MUTATION",
+        "ACCESS MANAGEMENT",
+    }
+
+    def user_risks(self, user_name: str) -> list[dict]:
+        """Detect risk indicators for a user."""
+        privs = self.resolve_effective_privileges(user_name)
+        risks: list[dict] = []
+
+        for p in privs:
+            at = p.get("access_type", "")
+            db = p.get("database")
+            tbl = p.get("table")
+
+            # Wildcard grants (no db restriction = all databases)
+            if not db and at not in ("SHOW", "SHOW DATABASES", "SHOW TABLES"):
+                risks.append({
+                    "level": "high",
+                    "type": "wildcard_grant",
+                    "message": f"Global {at} grant (all databases)",
+                    "privilege": at,
+                    "source": p.get("source_name", ""),
+                    "path": p.get("path", []),
+                })
+            # Admin-level privileges
+            elif at in self.ADMIN_PRIVS:
+                risks.append({
+                    "level": "high",
+                    "type": "admin_privilege",
+                    "message": f"Admin-level privilege: {at}",
+                    "privilege": at,
+                    "source": p.get("source_name", ""),
+                    "path": p.get("path", []),
+                })
+            # Database-wide grants (no table restriction)
+            elif db and not tbl and at not in ("SHOW", "SHOW TABLES"):
+                risks.append({
+                    "level": "medium",
+                    "type": "database_wide_grant",
+                    "message": f"{at} on all tables in {db}",
+                    "privilege": at,
+                    "source": p.get("source_name", ""),
+                    "path": p.get("path", []),
+                })
+
+        return risks
+
+    def orphan_roles(self) -> list[str]:
+        """Roles with no members (users or other roles inheriting them)."""
+        orphans = []
+        for rname in self._roles:
+            members = self.role_members(rname)
+            if not members:
+                orphans.append(rname)
+        return orphans
+
+    def risk_summary(self) -> dict:
+        """Cluster-wide risk summary."""
+        high = 0
+        medium = 0
+        low = 0
+        user_risks_map: dict[str, list[dict]] = {}
+
+        for uname in self._users:
+            risks = self.user_risks(uname)
+            if risks:
+                user_risks_map[uname] = risks
+                for r in risks:
+                    if r["level"] == "high":
+                        high += 1
+                    elif r["level"] == "medium":
+                        medium += 1
+                    else:
+                        low += 1
+
+        orphans = self.orphan_roles()
+
+        return {
+            "high_count": high,
+            "medium_count": medium,
+            "low_count": low,
+            "orphan_roles": orphans,
+            "users_with_risks": list(user_risks_map.keys()),
+            "total_users": len(self._users),
+            "total_roles": len(self._roles),
+        }
+
 
 # ── helpers ──────────────────────────────────────────────
 

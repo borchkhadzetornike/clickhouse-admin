@@ -1,13 +1,13 @@
-import json
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models import User, RoleEnum, AuditEvent
+from ..models import User, RoleEnum
 from ..schemas import UserOut, CreateUserRequest, UpdateUserRequest
 from ..auth import hash_password, require_role
+from ..audit import emit_audit_event
 
 router = APIRouter()
 
@@ -23,6 +23,7 @@ def list_users(
 @router.post("/users", response_model=UserOut, status_code=201)
 def create_user(
     req: CreateUserRequest,
+    request: Request,
     admin: User = Depends(require_role("admin")),
     db: Session = Depends(get_db),
 ):
@@ -42,13 +43,15 @@ def create_user(
     )
     db.add(user)
     db.flush()
-    db.add(
-        AuditEvent(
-            actor_user_id=admin.id,
-            action="user_created",
-            target=user.username,
-            metadata_json=json.dumps({"role": req.role}),
-        )
+    emit_audit_event(
+        db,
+        action="user_created",
+        actor=admin,
+        target_type="user",
+        target_id=user.id,
+        target_name=user.username,
+        metadata={"role": req.role},
+        request=request,
     )
     db.commit()
     db.refresh(user)
@@ -59,6 +62,7 @@ def create_user(
 def update_user(
     user_id: int,
     req: UpdateUserRequest,
+    request: Request,
     admin: User = Depends(require_role("admin")),
     db: Session = Depends(get_db),
 ):
@@ -76,14 +80,16 @@ def update_user(
         changes["is_active"] = req.is_active
     if req.password is not None:
         user.password_hash = hash_password(req.password)
-        changes["password"] = "reset"
-    db.add(
-        AuditEvent(
-            actor_user_id=admin.id,
-            action="user_updated",
-            target=user.username,
-            metadata_json=json.dumps(changes),
-        )
+        changes["password"] = "[reset]"  # never log the actual password
+    emit_audit_event(
+        db,
+        action="user_updated",
+        actor=admin,
+        target_type="user",
+        target_id=user.id,
+        target_name=user.username,
+        metadata=changes,
+        request=request,
     )
     db.commit()
     db.refresh(user)

@@ -16,6 +16,16 @@ class ClusterCreate(BaseModel):
     database: Optional[str] = None
 
 
+class ClusterUpdate(BaseModel):
+    name: Optional[str] = None
+    host: Optional[str] = None
+    port: Optional[int] = None
+    protocol: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    database: Optional[str] = None
+
+
 class ClusterOut(BaseModel):
     id: int
     name: str
@@ -25,13 +35,64 @@ class ClusterOut(BaseModel):
     username: str
     database: Optional[str]
     created_by: int
+    status: str
+    last_tested_at: Optional[datetime] = None
+    latency_ms: Optional[int] = None
+    server_version: Optional[str] = None
+    error_code: Optional[str] = None
+    error_message: Optional[str] = None
     created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ValidateConnectionRequest(BaseModel):
+    host: str
+    port: int = 8123
+    protocol: str = "http"
+    username: str
+    password: str
+    database: Optional[str] = None
+
+
+class ConnectionTestResult(BaseModel):
+    ok: bool
+    error_code: Optional[str] = None
+    message: str
+    suggestions: List[str] = []
+    latency_ms: Optional[int] = None
+    server_version: Optional[str] = None
+    current_user: Optional[str] = None
+    raw_error: Optional[str] = None
+
+
+class ClusterDiagnostics(BaseModel):
+    id: int
+    name: str
+    host: str
+    port: int
+    protocol: str
+    username: str
+    database: Optional[str]
+    status: str
+    last_tested_at: Optional[datetime] = None
+    latency_ms: Optional[int] = None
+    server_version: Optional[str] = None
+    current_user_detected: Optional[str] = None
+    error_code: Optional[str] = None
+    error_message: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    dependency_count: int = 0
 
     class Config:
         from_attributes = True
 
 
 class TestConnectionResponse(BaseModel):
+    """Legacy test response — kept for backward compatibility."""
     success: bool
     message: str
 
@@ -41,16 +102,69 @@ class TestConnectionResponse(BaseModel):
 
 class DatabaseOut(BaseModel):
     name: str
+    table_count: int = 0
+    is_system: bool = False
 
 
 class TableOut(BaseModel):
     name: str
     engine: Optional[str] = None
+    total_rows: Optional[int] = None
+    total_bytes: Optional[int] = None
+    last_modified: Optional[str] = None
 
 
 class ColumnOut(BaseModel):
     name: str
     type: str
+
+
+class ColumnRich(BaseModel):
+    name: str
+    type: str
+    default_kind: str = ""
+    default_expression: str = ""
+    comment: str = ""
+    is_in_primary_key: bool = False
+    is_in_sorting_key: bool = False
+    codec: str = ""
+
+
+class TableMetadata(BaseModel):
+    engine: str = ""
+    engine_full: str = ""
+    partition_key: str = ""
+    sorting_key: str = ""
+    primary_key: str = ""
+    sampling_key: str = ""
+    total_rows: Optional[int] = None
+    total_bytes: Optional[int] = None
+    lifetime_rows: Optional[int] = None
+    lifetime_bytes: Optional[int] = None
+    last_modified: Optional[str] = None
+    comment: str = ""
+
+
+class SampleColumn(BaseModel):
+    name: str
+    type: str
+
+
+class TableSample(BaseModel):
+    columns: List[SampleColumn] = []
+    rows: List[dict] = []
+    rows_read: int = 0
+    elapsed_ms: int = 0
+    error: Optional[str] = None
+
+
+class TableDetail(BaseModel):
+    database: str
+    table: str
+    columns: List[ColumnRich] = []
+    metadata: TableMetadata = TableMetadata()
+    ddl: str = ""
+    sample: Optional[TableSample] = None
 
 
 # ── Proposals ────────────────────────────────────────────
@@ -202,6 +316,25 @@ class SnapshotDiffOut(BaseModel):
     roles: dict = {}
     role_grants: dict = {}
     grants: dict = {}
+
+
+class RiskIndicator(BaseModel):
+    level: str  # high / medium / low
+    type: str
+    message: str
+    privilege: str = ""
+    source: str = ""
+    path: List[str] = []
+
+
+class RiskSummaryOut(BaseModel):
+    high_count: int = 0
+    medium_count: int = 0
+    low_count: int = 0
+    orphan_roles: List[str] = []
+    users_with_risks: List[str] = []
+    total_users: int = 0
+    total_roles: int = 0
 
 
 # ── Phase 3: Proposal Operations ─────────────────────

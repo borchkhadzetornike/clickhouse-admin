@@ -12,6 +12,7 @@ import Audit from "./pages/Audit";
 import RBAC from "./pages/RBAC";
 import Snapshots from "./pages/Snapshots";
 import AdminConsole from "./pages/AdminConsole";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
             />
             <Route path="rbac" element={<RBAC />} />
             <Route path="snapshots" element={<Snapshots />} />
+            <Route path="profile" element={<Profile />} />
             <Route
               path="users"
               element={

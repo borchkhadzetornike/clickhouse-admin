@@ -1,33 +1,14 @@
 """Minimal tests for auth-service: login, RBAC, admin seed."""
 
-import os
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
-# Use SQLite for testing
-os.environ["DATABASE_URL"] = "sqlite:///./test_auth.db"
-os.environ["JWT_SECRET"] = "test-secret"
+from app.database import Base
+from app.main import app
+from app.models import User, RoleEnum
+from app.auth import hash_password
+from .conftest import engine, TestSession
 
-from app.database import Base, get_db  # noqa: E402
-from app.main import app  # noqa: E402
-
-engine = create_engine(
-    "sqlite:///./test_auth.db", connect_args={"check_same_thread": False}
-)
-TestSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-def override_get_db():
-    db = TestSession()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 
@@ -35,27 +16,19 @@ client = TestClient(app)
 def setup_db():
     """Create tables before each test, drop after."""
     Base.metadata.create_all(bind=engine)
-    # Seed admin manually for tests
-    from app.models import User, RoleEnum
-    from app.auth import hash_password
-
     db = TestSession()
-    if db.query(User).count() == 0:
-        db.add(
-            User(
-                username="admin",
-                password_hash=hash_password("admin"),
-                role=RoleEnum.admin,
-                is_active=True,
-            )
+    db.add(
+        User(
+            username="admin",
+            password_hash=hash_password("admin"),
+            role=RoleEnum.admin,
+            is_active=True,
         )
-        db.commit()
+    )
+    db.commit()
     db.close()
     yield
     Base.metadata.drop_all(bind=engine)
-    # Clean up test db file
-    if os.path.exists("./test_auth.db"):
-        os.remove("./test_auth.db")
 
 
 def _login(username="admin", password="admin") -> str:
@@ -133,6 +106,6 @@ def test_audit_login_events():
     token = _login()
     resp = client.get("/audit", headers=_headers(token))
     assert resp.status_code == 200
-    events = resp.json()
-    actions = [e["action"] for e in events]
+    data = resp.json()
+    actions = [e["action"] for e in data["items"]]
     assert "login_success" in actions

@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 from .database import engine, Base
 from .routes.cluster_routes import router as cluster_router
@@ -17,10 +18,38 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def _run_migrations():
+    """Add any missing columns to existing tables (safe, idempotent)."""
+    migrations = [
+        ("clusters", "is_deleted", "BOOLEAN DEFAULT FALSE"),
+        ("clusters", "status", "VARCHAR(50) NOT NULL DEFAULT 'never_tested'"),
+        ("clusters", "last_tested_at", "TIMESTAMP WITH TIME ZONE"),
+        ("clusters", "latency_ms", "INTEGER"),
+        ("clusters", "server_version", "VARCHAR(255)"),
+        ("clusters", "current_user_detected", "VARCHAR(255)"),
+        ("clusters", "error_code", "VARCHAR(50)"),
+        ("clusters", "error_message", "TEXT"),
+        ("clusters", "updated_at", "TIMESTAMP WITH TIME ZONE DEFAULT NOW()"),
+    ]
+    insp = inspect(engine)
+    table_names = insp.get_table_names()
+    with engine.begin() as conn:
+        for table, column, col_type in migrations:
+            if table not in table_names:
+                continue
+            existing = {col["name"] for col in insp.get_columns(table)}
+            if column not in existing:
+                logger.info(f"Migration: adding column {table}.{column}")
+                conn.execute(
+                    text(f'ALTER TABLE {table} ADD COLUMN "{column}" {col_type}')
+                )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Governance service starting up — creating tables...")
     Base.metadata.create_all(bind=engine)
+    _run_migrations()
     yield
 
 

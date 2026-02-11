@@ -1,28 +1,28 @@
-import json
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models import User, AuditEvent
+from ..models import User
 from ..schemas import LoginRequest, LoginResponse, UserOut
 from ..auth import verify_password, create_access_token, get_current_user
+from ..audit import emit_audit_event
 
 router = APIRouter()
 
 
 @router.post("/login", response_model=LoginResponse)
-def login(req: LoginRequest, db: Session = Depends(get_db)):
+def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == req.username).first()
     if not user or not verify_password(req.password, user.password_hash):
-        # Audit failed login attempt
-        db.add(
-            AuditEvent(
-                actor_user_id=user.id if user else None,
-                action="login_failed",
-                target=req.username,
-                metadata_json=json.dumps({"reason": "invalid credentials"}),
-            )
+        emit_audit_event(
+            db,
+            action="login_failed",
+            actor=user,  # None if user not found
+            severity="warn",
+            target_type="user",
+            target_name=req.username,
+            metadata={"reason": "invalid credentials"},
+            request=request,
         )
         db.commit()
         raise HTTPException(
@@ -35,13 +35,14 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
             detail="Account disabled",
         )
     token = create_access_token(user)
-    # Audit successful login
-    db.add(
-        AuditEvent(
-            actor_user_id=user.id,
-            action="login_success",
-            target=user.username,
-        )
+    emit_audit_event(
+        db,
+        action="login_success",
+        actor=user,
+        target_type="user",
+        target_id=user.id,
+        target_name=user.username,
+        request=request,
     )
     db.commit()
     return LoginResponse(access_token=token)

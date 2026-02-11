@@ -98,6 +98,91 @@ The **Execute** button is visible but **permanently disabled** in this MVP. The 
 
 Navigate to **Audit** to see all actions: logins, user changes, cluster operations, proposal workflows. Filter by source (Auth / Governance).
 
+## Demo ClickHouse Instance (Dev / Demo Only)
+
+A separate Docker Compose file provides a self-contained ClickHouse instance
+pre-loaded with demo users, roles, a sample database, and seed data. Use it
+to test the governance/auth app locally **without connecting to a real cluster**.
+
+### Start the Demo Instance
+
+```bash
+docker compose -f docker-compose.clickhouse.yml up -d
+```
+
+Wait for the healthcheck to pass (≈ 15–20 s on first run), then verify:
+
+```bash
+docker compose -f docker-compose.clickhouse.yml ps
+# STATUS should show "healthy"
+```
+
+### Stop / Reset
+
+```bash
+# Stop (data preserved)
+docker compose -f docker-compose.clickhouse.yml down
+
+# Stop and destroy all data
+docker compose -f docker-compose.clickhouse.yml down -v
+rm -rf ./dev-data/clickhouse
+```
+
+### Connection Details
+
+| Parameter  | Value                |
+|------------|----------------------|
+| Host       | `localhost` (from host) or `clickhouse-demo` (from Docker network) |
+| HTTP port  | `8123`               |
+| Native port| `9000`               |
+| Default user | `default`          |
+| Default password | `clickhouse`   |
+
+### Demo Users & Credentials
+
+| User          | Password           | Default Role     | Privileges                        |
+|---------------|--------------------|------------------|-----------------------------------|
+| `demo_admin`  | `demo_admin_pass`  | `analytics_rw`   | SELECT + INSERT on `analytics.*`  |
+| `demo_reader` | `demo_reader_pass` | `analytics_ro`   | SELECT on `analytics.*`           |
+
+### Demo Roles
+
+| Role           | Grants                             |
+|----------------|------------------------------------|
+| `analytics_ro` | SELECT on `analytics.*`            |
+| `analytics_rw` | SELECT + INSERT on `analytics.*`   |
+
+### Demo Database & Tables
+
+| Table             | Description                       |
+|-------------------|-----------------------------------|
+| `analytics.sales` | Sample sales transactions (5 rows)|
+| `analytics.users` | Sample user records (4 rows)      |
+
+### Adding the Cluster in the Governance UI
+
+Once both stacks are running you can register the demo instance as a cluster:
+
+1. Start the main stack: `docker compose up --build`
+2. Start the demo ClickHouse: `docker compose -f docker-compose.clickhouse.yml up -d`
+3. Login to the UI at http://localhost:3000 (`admin` / `admin`)
+4. Navigate to **Clusters** → **Add Cluster** and fill in:
+   - **Name**: `demo`
+   - **Host**: `host.docker.internal` (resolves to the Docker host)
+   - **Port**: `8123`
+   - **Protocol**: `http`
+   - **Username**: `default`
+   - **Password**: `clickhouse`
+5. Click **Test Connection** — it should succeed.
+
+> **Networking note**: The demo ClickHouse runs on its own Docker network.
+> Main-stack services reach it via `host.docker.internal` (macOS / Windows)
+> which resolves to the host machine where port 8123 is published. On Linux
+> you may need to add `--add-host=host.docker.internal:host-gateway` to your
+> main-stack services, or connect both stacks to a shared Docker network.
+
+---
+
 ## Local Development (Without Docker)
 
 ### Prerequisites
@@ -173,6 +258,12 @@ pytest tests/ -v
 ```
 clickhouse-admin/
 ├── docker-compose.yml
+├── docker-compose.clickhouse.yml   # Demo ClickHouse (dev only)
+├── dev/
+│   └── clickhouse/
+│       └── init/                   # Bootstrap SQL scripts
+│           ├── 01_create_database_and_tables.sql
+│           └── 02_create_roles_and_users.sql
 ├── .env.example
 ├── README.md
 ├── apps/
