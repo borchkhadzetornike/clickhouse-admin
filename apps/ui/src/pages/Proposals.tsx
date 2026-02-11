@@ -184,14 +184,14 @@ export default function Proposals() {
 
   const statusColor = (s: string) => {
     switch (s) {
-      case "submitted": return "bg-yellow-100 text-yellow-800";
-      case "approved": return "bg-blue-100 text-blue-800";
-      case "executed": return "bg-green-100 text-green-800";
-      case "rejected": return "bg-red-100 text-red-800";
-      case "executing": return "bg-purple-100 text-purple-800";
-      case "failed": return "bg-red-100 text-red-800";
-      case "partially_executed": return "bg-orange-100 text-orange-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "submitted": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "approved": return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+      case "executed": return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+      case "rejected": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+      case "executing": return "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400";
+      case "failed": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+      case "partially_executed": return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400";
+      default: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
     }
   };
 
@@ -238,22 +238,22 @@ export default function Proposals() {
                 <option value="revoke_select">REVOKE SELECT</option>
               </select></div>
             <div><label className="block text-sm font-medium mb-1">Database</label>
-              <select value={legacyForm.db} onChange={e => handleDbChange(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+              <select value={legacyForm.db} onChange={e => handleDbChange(e.target.value)} className="w-full border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 px-3 py-2 text-sm" required>
                 <option value="">Select database</option>
                 {databases.map(d => <option key={d} value={d}>{d}</option>)}
               </select></div>
             <div><label className="block text-sm font-medium mb-1">Table</label>
-              <select value={legacyForm.table} onChange={e => setLegacyForm({ ...legacyForm, table: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+              <select value={legacyForm.table} onChange={e => setLegacyForm({ ...legacyForm, table: e.target.value })} className="w-full border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 px-3 py-2 text-sm" required>
                 <option value="">Select table</option>
                 {tables.map(t => <option key={t} value={t}>{t}</option>)}
               </select></div>
             <div><label className="block text-sm font-medium mb-1">Target Type</label>
-              <select value={legacyForm.target_type} onChange={e => setLegacyForm({ ...legacyForm, target_type: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={legacyForm.target_type} onChange={e => setLegacyForm({ ...legacyForm, target_type: e.target.value })} className="w-full border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 px-3 py-2 text-sm">
                 <option value="user">User</option>
                 <option value="role">Role</option>
               </select></div>
             <div><label className="block text-sm font-medium mb-1">Target Name</label>
-              <input value={legacyForm.target_name} onChange={e => setLegacyForm({ ...legacyForm, target_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required placeholder="ClickHouse user or role name" /></div>
+              <input value={legacyForm.target_name} onChange={e => setLegacyForm({ ...legacyForm, target_name: e.target.value })} className="w-full border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 px-3 py-2 text-sm" required placeholder="ClickHouse user or role name" /></div>
           </div>
           <div><label className="block text-sm font-medium mb-1">Reason</label>
             <textarea value={legacyForm.reason} onChange={e => setLegacyForm({ ...legacyForm, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" rows={2} placeholder="Why?" /></div>
@@ -263,23 +263,23 @@ export default function Proposals() {
 
       {/* ── Detail View ──────────────────────────── */}
       {selectedProposal && (
-        <div className="bg-white shadow rounded-xl p-6 mb-6">
+        <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">Proposal #{selectedProposal.id}: {proposalTitle(selectedProposal)}</h2>
-            <button onClick={() => setSelectedProposal(null)} className="text-gray-400 hover:text-gray-600 text-sm">Close</button>
+            <button onClick={() => setSelectedProposal(null)} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 text-sm">Close</button>
           </div>
 
           {/* Metadata */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm mb-4">
-            <div><span className="text-gray-500">Status:</span>{" "}
+            <div><span className="text-gray-500 dark:text-gray-400">Status:</span>{" "}
               <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusColor(selectedProposal.status)}`}>{selectedProposal.status}</span></div>
-            <div><span className="text-gray-500">Type:</span> {selectedProposal.type}</div>
-            <div><span className="text-gray-500">Cluster:</span> {clusterName(selectedProposal.cluster_id)}</div>
-            <div><span className="text-gray-500">Created:</span> {new Date(selectedProposal.created_at).toLocaleString()}</div>
-            {selectedProposal.executed_at && <div><span className="text-gray-500">Executed:</span> {new Date(selectedProposal.executed_at).toLocaleString()}</div>}
+            <div><span className="text-gray-500 dark:text-gray-400">Type:</span> {selectedProposal.type}</div>
+            <div><span className="text-gray-500 dark:text-gray-400">Cluster:</span> {clusterName(selectedProposal.cluster_id)}</div>
+            <div><span className="text-gray-500 dark:text-gray-400">Created:</span> {new Date(selectedProposal.created_at).toLocaleString()}</div>
+            {selectedProposal.executed_at && <div><span className="text-gray-500 dark:text-gray-400">Executed:</span> {new Date(selectedProposal.executed_at).toLocaleString()}</div>}
           </div>
 
-          {selectedProposal.reason && <p className="text-sm mb-4"><span className="text-gray-500">Reason:</span> {selectedProposal.reason}</p>}
+          {selectedProposal.reason && <p className="text-sm mb-4"><span className="text-gray-500 dark:text-gray-400">Reason:</span> {selectedProposal.reason}</p>}
 
           {/* Operations */}
           {selectedProposal.operations.length > 0 && (
@@ -287,10 +287,10 @@ export default function Proposals() {
               <h3 className="text-sm font-semibold mb-2">Operations ({selectedProposal.operations.length})</h3>
               <div className="space-y-1">
                 {selectedProposal.operations.map((op, i) => (
-                  <div key={op.id} className="bg-gray-50 rounded p-2 text-xs font-mono">
-                    <span className="text-gray-400 mr-2">#{i + 1}</span>
-                    <span className="text-blue-700">{op.operation_type}</span>
-                    {op.sql_preview && <span className="ml-2 text-gray-600">— {op.sql_preview}</span>}
+                  <div key={op.id} className="bg-gray-50 dark:bg-gray-800 rounded p-2 text-xs font-mono dark:text-gray-300">
+                    <span className="text-gray-400 dark:text-gray-500 mr-2">#{i + 1}</span>
+                    <span className="text-blue-700 dark:text-blue-400">{op.operation_type}</span>
+                    {op.sql_preview && <span className="ml-2 text-gray-600 dark:text-gray-400">— {op.sql_preview}</span>}
                   </div>
                 ))}
               </div>
@@ -321,12 +321,12 @@ export default function Proposals() {
           {dryRunResult && (
             <div className="mb-4">
               <h3 className="text-sm font-semibold mb-2">Dry-Run Results — {dryRunResult.status}</h3>
-              <div className="border rounded-lg overflow-hidden">
+              <div className="border dark:border-gray-700 rounded-lg overflow-hidden">
                 {dryRunResult.steps.map((s, i) => (
-                  <div key={i} className={`px-3 py-2 text-xs border-b last:border-0 flex items-center gap-2 ${i % 2 === 0 ? "bg-gray-50" : ""}`}>
+                  <div key={i} className={`px-3 py-2 text-xs border-b dark:border-gray-700 last:border-0 flex items-center gap-2 ${i % 2 === 0 ? "bg-gray-50 dark:bg-gray-800" : ""}`}>
                     <span className={`font-bold ${stepStatusColor(s.status)}`}>{s.status.toUpperCase()}</span>
-                    <span className="font-mono text-gray-600 flex-1">{s.sql_statement}</span>
-                    {s.result_message && <span className="text-gray-400">{s.result_message}</span>}
+                    <span className="font-mono text-gray-600 dark:text-gray-400 flex-1">{s.sql_statement}</span>
+                    {s.result_message && <span className="text-gray-400 dark:text-gray-500">{s.result_message}</span>}
                   </div>
                 ))}
               </div>
@@ -338,19 +338,19 @@ export default function Proposals() {
             <div className="mb-4">
               <h3 className="text-sm font-semibold mb-2">Execution History</h3>
               {jobs.map(job => (
-                <div key={job.id} className="border rounded-lg mb-2 overflow-hidden">
-                  <div className="bg-gray-50 px-3 py-2 text-xs flex items-center gap-3">
+                <div key={job.id} className="border dark:border-gray-700 rounded-lg mb-2 overflow-hidden">
+                  <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 text-xs flex items-center gap-3">
                     <span className="font-bold">Job #{job.id}</span>
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusColor(job.status)}`}>{job.status}</span>
-                    <span className="text-gray-400">{job.mode}</span>
-                    <span className="text-gray-400">{new Date(job.created_at).toLocaleString()}</span>
-                    {job.error && <span className="text-red-600">{job.error}</span>}
+                    <span className="text-gray-400 dark:text-gray-500">{job.mode}</span>
+                    <span className="text-gray-400 dark:text-gray-500">{new Date(job.created_at).toLocaleString()}</span>
+                    {job.error && <span className="text-red-600 dark:text-red-400">{job.error}</span>}
                   </div>
                   {job.steps.map((s, i) => (
-                    <div key={i} className={`px-3 py-2 text-xs border-t flex items-center gap-2`}>
+                    <div key={i} className={`px-3 py-2 text-xs border-t dark:border-gray-700 flex items-center gap-2`}>
                       <span className={`font-bold w-20 ${stepStatusColor(s.status)}`}>{s.status}</span>
-                      <span className="font-mono text-gray-600 flex-1 truncate">{s.sql_statement}</span>
-                      {s.result_message && s.result_message !== "OK" && <span className="text-gray-500 max-w-xs truncate">{s.result_message}</span>}
+                      <span className="font-mono text-gray-600 dark:text-gray-400 flex-1 truncate">{s.sql_statement}</span>
+                      {s.result_message && s.result_message !== "OK" && <span className="text-gray-500 dark:text-gray-400 max-w-xs truncate">{s.result_message}</span>}
                     </div>
                   ))}
                 </div>
@@ -383,35 +383,35 @@ export default function Proposals() {
       )}
 
       {/* ── Table ────────────────────────────────── */}
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
             <tr>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">ID</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Title</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Cluster</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Ops</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">SQL Preview</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Status</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Created</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">ID</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Title</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Cluster</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Ops</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">SQL Preview</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Status</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Created</th>
             </tr>
           </thead>
           <tbody>
             {proposals.map(p => (
-              <tr key={p.id} className="border-b last:border-0 hover:bg-gray-50 cursor-pointer"
+              <tr key={p.id} className="border-b dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
                 onClick={() => selectProposal(p)}>
                 <td className="px-4 py-3 font-medium">#{p.id}</td>
                 <td className="px-4 py-3">{proposalTitle(p)}</td>
                 <td className="px-4 py-3">{clusterName(p.cluster_id)}</td>
                 <td className="px-4 py-3">{p.operations.length || 1}</td>
-                <td className="px-4 py-3 font-mono text-xs text-gray-600 truncate max-w-[200px]">{p.sql_preview}</td>
+                <td className="px-4 py-3 font-mono text-xs text-gray-600 dark:text-gray-400 truncate max-w-[200px]">{p.sql_preview}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusColor(p.status)}`}>{p.status}</span>
                 </td>
-                <td className="px-4 py-3 text-gray-500">{new Date(p.created_at).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{new Date(p.created_at).toLocaleDateString()}</td>
               </tr>
             ))}
-            {proposals.length === 0 && <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-400">No proposals yet.</td></tr>}
+            {proposals.length === 0 && <tr><td colSpan={7} className="px-4 py-12 text-center text-gray-400 dark:text-gray-500">No proposals yet.</td></tr>}
           </tbody>
         </table>
       </div>

@@ -145,7 +145,7 @@ export default function RBAC() {
           <select
             value={clusterId ?? ""}
             onChange={(e) => setClusterId(e.target.value ? Number(e.target.value) : null)}
-            className="border rounded-lg px-3 py-2 text-sm"
+            className="border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 px-3 py-2 text-sm"
           >
             <option value="">Select cluster</option>
             {clusters.map((c) => (
@@ -165,21 +165,21 @@ export default function RBAC() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400 text-sm px-4 py-3 rounded-lg mb-4">
           {error}
         </div>
       )}
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-6 border-b">
+      <div className="flex gap-1 mb-6 border-b dark:border-gray-700">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => { setTab(t.key); setSelectedUser(null); setSelectedRole(null); }}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               tab === t.key
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                ? "border-blue-600 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             }`}
           >
             {t.label}
@@ -188,14 +188,14 @@ export default function RBAC() {
       </div>
 
       {!clusterId && (
-        <div className="text-center text-gray-400 py-16">Select a cluster to explore RBAC state.</div>
+        <div className="text-center text-gray-400 dark:text-gray-500 py-16">Select a cluster to explore RBAC state.</div>
       )}
 
       {/* ── Users Tab ──────────────────────────────── */}
       {clusterId && tab === "users" && (
         <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-1 bg-white shadow rounded-xl p-4 max-h-[600px] overflow-y-auto">
-            <h2 className="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-3">
+          <div className="col-span-1 bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-4 max-h-[600px] overflow-y-auto">
+            <h2 className="font-semibold text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
               ClickHouse Users ({chUsers.length})
             </h2>
             <ul className="space-y-0.5">
@@ -205,24 +205,24 @@ export default function RBAC() {
                     onClick={() => handleSelectUser(u.name)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                       selectedUser?.name === u.name
-                        ? "bg-blue-100 text-blue-700 font-medium"
-                        : "hover:bg-gray-100"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-medium"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}
                   >
                     <div className="font-medium">{u.name}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       {u.role_count} roles &middot; {u.direct_grant_count} grants
                       {u.auth_type && <> &middot; {u.auth_type}</>}
                     </div>
                   </button>
                 </li>
               ))}
-              {chUsers.length === 0 && <p className="text-sm text-gray-400 px-2">No users found</p>}
+              {chUsers.length === 0 && <p className="text-sm text-gray-400 dark:text-gray-500 px-2">No users found</p>}
             </ul>
           </div>
           <div className="col-span-2">
             {selectedUser ? <UserDetail data={selectedUser} /> : (
-              <div className="bg-white shadow rounded-xl p-8 text-center text-gray-400">
+              <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-8 text-center text-gray-400 dark:text-gray-500">
                 Select a user to view details
               </div>
             )}
@@ -233,8 +233,8 @@ export default function RBAC() {
       {/* ── Roles Tab ──────────────────────────────── */}
       {clusterId && tab === "roles" && (
         <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-1 bg-white shadow rounded-xl p-4 max-h-[600px] overflow-y-auto">
-            <h2 className="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-3">
+          <div className="col-span-1 bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-4 max-h-[600px] overflow-y-auto">
+            <h2 className="font-semibold text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
               ClickHouse Roles ({chRoles.length})
             </h2>
             <ul className="space-y-0.5">
@@ -244,23 +244,23 @@ export default function RBAC() {
                     onClick={() => handleSelectRole(r.name)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                       selectedRole?.name === r.name
-                        ? "bg-blue-100 text-blue-700 font-medium"
-                        : "hover:bg-gray-100"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-medium"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}
                   >
                     <div className="font-medium">{r.name}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       {r.member_count} members &middot; {r.direct_grant_count} grants
                     </div>
                   </button>
                 </li>
               ))}
-              {chRoles.length === 0 && <p className="text-sm text-gray-400 px-2">No roles found</p>}
+              {chRoles.length === 0 && <p className="text-sm text-gray-400 dark:text-gray-500 px-2">No roles found</p>}
             </ul>
           </div>
           <div className="col-span-2">
             {selectedRole ? <RoleDetail data={selectedRole} /> : (
-              <div className="bg-white shadow rounded-xl p-8 text-center text-gray-400">
+              <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-8 text-center text-gray-400 dark:text-gray-500">
                 Select a role to view details
               </div>
             )}
@@ -271,14 +271,14 @@ export default function RBAC() {
       {/* ── Objects Tab ────────────────────────────── */}
       {clusterId && tab === "objects" && (
         <div>
-          <div className="bg-white shadow rounded-xl p-4 mb-6">
+          <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-4 mb-6">
             <div className="flex items-end gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Database</label>
                 <select
                   value={objDb}
                   onChange={(e) => handleObjDbChange(e.target.value)}
-                  className="border rounded-lg px-3 py-2 text-sm min-w-[200px]"
+                  className="border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 px-3 py-2 text-sm min-w-[200px]"
                 >
                   <option value="">Select database</option>
                   {databases.map((d) => (
@@ -291,7 +291,7 @@ export default function RBAC() {
                 <select
                   value={objTable}
                   onChange={(e) => setObjTable(e.target.value)}
-                  className="border rounded-lg px-3 py-2 text-sm min-w-[200px]"
+                  className="border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 px-3 py-2 text-sm min-w-[200px]"
                 >
                   <option value="">All tables</option>
                   {tables.map((t) => (
@@ -309,32 +309,32 @@ export default function RBAC() {
             </div>
           </div>
           {objectAccess && (
-            <div className="bg-white shadow rounded-xl overflow-hidden">
-              <div className="px-4 py-3 bg-gray-50 border-b">
+            <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 overflow-hidden">
+              <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
                 <span className="font-medium text-sm">
                   Access to {objectAccess.database}
                   {objectAccess.table ? `.${objectAccess.table}` : ".*"}
                 </span>
-                <span className="text-gray-500 text-sm ml-2">
+                <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
                   ({objectAccess.entries.length} entries)
                 </span>
               </div>
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-600">Name</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-600">Type</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-600">Privileges</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-600">Source</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Name</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Type</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Privileges</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Source</th>
                   </tr>
                 </thead>
                 <tbody>
                   {objectAccess.entries.map((e: any, i: number) => (
-                    <tr key={i} className="border-b last:border-0 hover:bg-gray-50">
+                    <tr key={i} className="border-b dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800">
                       <td className="px-4 py-3 font-medium">{e.name}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          e.entity_type === "user" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"
+                          e.entity_type === "user" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
                         }`}>
                           {e.entity_type}
                         </span>
@@ -342,18 +342,18 @@ export default function RBAC() {
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {e.access_types.map((at: string) => (
-                            <span key={at} className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-mono">
+                            <span key={at} className="bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 px-2 py-0.5 rounded text-xs font-mono">
                               {at}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{e.source}</td>
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">{e.source}</td>
                     </tr>
                   ))}
                   {objectAccess.entries.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
+                      <td colSpan={4} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500">
                         No access found for this object.
                       </td>
                     </tr>
@@ -373,60 +373,60 @@ export default function RBAC() {
 function UserDetail({ data }: { data: any }) {
   return (
     <div className="space-y-4">
-      <div className="bg-white shadow rounded-xl p-5">
+      <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-5">
         <h2 className="text-lg font-bold mb-3">{data.name}</h2>
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div><span className="text-gray-500">Auth type:</span> {data.auth_type || "—"}</div>
-          <div><span className="text-gray-500">Default roles all:</span> {data.default_roles_all ? "Yes" : "No"}</div>
-          <div><span className="text-gray-500">Host IPs:</span> {(data.host_ip || []).join(", ") || "—"}</div>
-          <div><span className="text-gray-500">Default roles:</span> {(data.default_roles || []).join(", ") || "—"}</div>
+          <div><span className="text-gray-500 dark:text-gray-400">Auth type:</span> {data.auth_type || "—"}</div>
+          <div><span className="text-gray-500 dark:text-gray-400">Default roles all:</span> {data.default_roles_all ? "Yes" : "No"}</div>
+          <div><span className="text-gray-500 dark:text-gray-400">Host IPs:</span> {(data.host_ip || []).join(", ") || "—"}</div>
+          <div><span className="text-gray-500 dark:text-gray-400">Default roles:</span> {(data.default_roles || []).join(", ") || "—"}</div>
         </div>
       </div>
 
       {/* Roles */}
-      <div className="bg-white shadow rounded-xl p-5">
+      <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-5">
         <h3 className="font-semibold text-sm mb-3">Roles ({data.all_roles?.length || 0})</h3>
         {data.all_roles?.length > 0 ? (
           <table className="w-full text-sm">
-            <thead><tr className="border-b">
-              <th className="text-left py-1.5 font-medium text-gray-500">Role</th>
-              <th className="text-left py-1.5 font-medium text-gray-500">Direct?</th>
-              <th className="text-left py-1.5 font-medium text-gray-500">Default?</th>
-              <th className="text-left py-1.5 font-medium text-gray-500">Path</th>
+            <thead><tr className="border-b dark:border-gray-700">
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Role</th>
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Direct?</th>
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Default?</th>
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Path</th>
             </tr></thead>
             <tbody>
               {data.all_roles.map((r: any, i: number) => (
-                <tr key={i} className="border-b last:border-0">
+                <tr key={i} className="border-b dark:border-gray-700 last:border-0">
                   <td className="py-1.5 font-medium">{r.role_name}</td>
                   <td className="py-1.5">{r.is_direct ? "Yes" : "No"}</td>
                   <td className="py-1.5">{r.is_default ? "Yes" : "—"}</td>
-                  <td className="py-1.5 text-gray-500 text-xs font-mono">{r.path?.join(" → ")}</td>
+                  <td className="py-1.5 text-gray-500 dark:text-gray-400 text-xs font-mono">{r.path?.join(" → ")}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        ) : <p className="text-gray-400 text-sm">No roles assigned.</p>}
+        ) : <p className="text-gray-400 dark:text-gray-500 text-sm">No roles assigned.</p>}
       </div>
 
       {/* Effective Privileges */}
-      <div className="bg-white shadow rounded-xl p-5">
+      <div className="bg-white shadow rounded-xl dark:bg-gray-900 dark:shadow-gray-900/50 p-5">
         <h3 className="font-semibold text-sm mb-3">
           Effective Privileges ({data.effective_privileges?.length || 0})
         </h3>
         {data.effective_privileges?.length > 0 ? (
           <table className="w-full text-sm">
-            <thead><tr className="border-b">
-              <th className="text-left py-1.5 font-medium text-gray-500">Access</th>
-              <th className="text-left py-1.5 font-medium text-gray-500">Database</th>
-              <th className="text-left py-1.5 font-medium text-gray-500">Table</th>
-              <th className="text-left py-1.5 font-medium text-gray-500">Source</th>
-              <th className="text-left py-1.5 font-medium text-gray-500">Origin</th>
+            <thead><tr className="border-b dark:border-gray-700">
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Access</th>
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Database</th>
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Table</th>
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Source</th>
+              <th className="text-left py-1.5 font-medium text-gray-500 dark:text-gray-400">Origin</th>
             </tr></thead>
             <tbody>
               {data.effective_privileges.map((p: any, i: number) => (
-                <tr key={i} className="border-b last:border-0">
+                <tr key={i} className="border-b dark:border-gray-700 last:border-0">
                   <td className="py-1.5">
-                    <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-mono">
+                    <span className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 px-2 py-0.5 rounded text-xs font-mono">
                       {p.access_type}
                     </span>
                   </td>
@@ -434,17 +434,17 @@ function UserDetail({ data }: { data: any }) {
                   <td className="py-1.5">{p.table || "*"}</td>
                   <td className="py-1.5">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      p.source === "direct" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"
+                      p.source === "direct" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
                     }`}>
                       {p.source === "direct" ? "direct" : `role: ${p.source_name}`}
                     </span>
                   </td>
-                  <td className="py-1.5 text-gray-500 text-xs font-mono">{p.path?.join(" → ")}</td>
+                  <td className="py-1.5 text-gray-500 dark:text-gray-400 text-xs font-mono">{p.path?.join(" → ")}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        ) : <p className="text-gray-400 text-sm">No effective privileges.</p>}
+        ) : <p className="text-gray-400 dark:text-gray-500 text-sm">No effective privileges.</p>}
       </div>
     </div>
   );

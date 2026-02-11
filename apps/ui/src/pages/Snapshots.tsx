@@ -88,10 +88,10 @@ export default function Snapshots() {
 
   const statusColor = (s: string) => {
     switch (s) {
-      case "completed": return "bg-green-100 text-green-800";
-      case "running": return "bg-yellow-100 text-yellow-800";
-      case "failed": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "completed": return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+      case "running": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "failed": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+      default: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
     }
   };
 
@@ -110,7 +110,7 @@ export default function Snapshots() {
               setDiffFrom(null);
               setDiffTo(null);
             }}
-            className="border rounded-lg px-3 py-2 text-sm"
+            className="border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
           >
             <option value="">Select cluster</option>
             {clusters.map((c) => (
@@ -130,34 +130,34 @@ export default function Snapshots() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
           {error}
         </div>
       )}
 
       {!clusterId && (
-        <div className="text-center text-gray-400 py-16">Select a cluster to manage snapshots.</div>
+        <div className="text-center text-gray-400 py-16 dark:text-gray-500">Select a cluster to manage snapshots.</div>
       )}
 
       {clusterId && (
         <>
           {/* Snapshot list */}
-          <div className="bg-white shadow rounded-xl overflow-hidden mb-6">
+          <div className="bg-white shadow rounded-xl overflow-hidden mb-6 dark:bg-gray-900 dark:shadow-gray-900/50">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">ID</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Status</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Users</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Roles</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Grants</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Collected</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Compare</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">ID</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Status</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Users</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Roles</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Grants</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Collected</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Compare</th>
                 </tr>
               </thead>
               <tbody>
                 {snapshots.map((s) => (
-                  <tr key={s.id} className="border-b last:border-0 hover:bg-gray-50">
+                  <tr key={s.id} className="border-b last:border-0 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                     <td className="px-4 py-3 font-medium">#{s.id}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusColor(s.status)}`}>
@@ -167,7 +167,7 @@ export default function Snapshots() {
                     <td className="px-4 py-3">{s.user_count ?? "—"}</td>
                     <td className="px-4 py-3">{s.role_count ?? "—"}</td>
                     <td className="px-4 py-3">{s.grant_count ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                       {s.completed_at
                         ? new Date(s.completed_at).toLocaleString()
                         : s.started_at
@@ -204,7 +204,7 @@ export default function Snapshots() {
                 ))}
                 {snapshots.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
+                    <td colSpan={7} className="px-4 py-12 text-center text-gray-400 dark:text-gray-500">
                       No snapshots yet. Click "Collect Now" to create one.
                     </td>
                   </tr>
@@ -216,7 +216,7 @@ export default function Snapshots() {
           {/* Diff controls */}
           {diffFrom && diffTo && diffFrom !== diffTo && (
             <div className="mb-6 flex items-center gap-4">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 Comparing snapshot <strong>#{diffFrom}</strong> → <strong>#{diffTo}</strong>
               </span>
               <button
@@ -255,23 +255,23 @@ function DiffViewer({ data }: { data: any }) {
         const hasChanges =
           (d.added_count || 0) + (d.removed_count || 0) + (d.modified_count || 0) > 0;
         return (
-          <div key={s.key} className="bg-white shadow rounded-xl p-5">
+          <div key={s.key} className="bg-white shadow rounded-xl p-5 dark:bg-gray-900 dark:shadow-gray-900/50">
             <h3 className="font-semibold text-sm mb-2">
               {s.label}
               {!hasChanges && (
-                <span className="ml-2 text-gray-400 font-normal">No changes</span>
+                <span className="ml-2 text-gray-400 font-normal dark:text-gray-500">No changes</span>
               )}
             </h3>
             {hasChanges && (
               <div className="space-y-2 text-sm">
                 {(d.added || []).length > 0 && (
                   <div>
-                    <span className="text-green-700 font-medium">
+                    <span className="text-green-700 font-medium dark:text-green-400">
                       + {d.added.length} added
                     </span>
                     <div className="mt-1 space-y-1">
                       {d.added.map((item: any, i: number) => (
-                        <div key={i} className="bg-green-50 border border-green-200 rounded px-3 py-1.5 font-mono text-xs">
+                        <div key={i} className="bg-green-50 border border-green-200 rounded px-3 py-1.5 font-mono text-xs dark:bg-green-900/30 dark:border-green-800">
                           {item.name || item.granted_role_name || item.access_type || JSON.stringify(item).slice(0, 120)}
                         </div>
                       ))}
@@ -280,12 +280,12 @@ function DiffViewer({ data }: { data: any }) {
                 )}
                 {(d.removed || []).length > 0 && (
                   <div>
-                    <span className="text-red-700 font-medium">
+                    <span className="text-red-700 font-medium dark:text-red-400">
                       - {d.removed.length} removed
                     </span>
                     <div className="mt-1 space-y-1">
                       {d.removed.map((item: any, i: number) => (
-                        <div key={i} className="bg-red-50 border border-red-200 rounded px-3 py-1.5 font-mono text-xs">
+                        <div key={i} className="bg-red-50 border border-red-200 rounded px-3 py-1.5 font-mono text-xs dark:bg-red-900/30 dark:border-red-800">
                           {item.name || item.granted_role_name || item.access_type || JSON.stringify(item).slice(0, 120)}
                         </div>
                       ))}
@@ -294,7 +294,7 @@ function DiffViewer({ data }: { data: any }) {
                 )}
                 {(d.modified || []).length > 0 && (
                   <div>
-                    <span className="text-yellow-700 font-medium">
+                    <span className="text-yellow-700 font-medium dark:text-yellow-400">
                       ~ {d.modified.length} modified
                     </span>
                   </div>

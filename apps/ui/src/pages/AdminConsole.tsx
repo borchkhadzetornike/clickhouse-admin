@@ -97,28 +97,28 @@ export default function AdminConsole() {
       {/* Cluster selector */}
       <div className="mb-4 flex items-center gap-4">
         <select value={clusterId} onChange={e => setClusterId(+e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm">
+          className="border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
           <option value={0}>Select cluster</option>
           {clusters.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
 
-      {!clusterId && <p className="text-gray-400">Select a cluster to manage.</p>}
+      {!clusterId && <p className="text-gray-400 dark:text-gray-500">Select a cluster to manage.</p>}
 
       {clusterId > 0 && (
         <>
           {/* Tabs */}
-          <div className="flex border-b mb-4">
+          <div className="flex border-b mb-4 dark:border-gray-700">
             {TABS.map(t => (
               <button key={t} onClick={() => { setTab(t); setShowForm(false); setSuccess(""); }}
                 className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"
+                  tab === t ? "border-blue-600 text-blue-600 dark:text-blue-400" : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                 }`}>{t}</button>
             ))}
           </div>
 
-          {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">{error}</div>}
-          {success && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg mb-4">{success}</div>}
+          {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">{error}</div>}
+          {success && <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg mb-4 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400">{success}</div>}
 
           {/* ── Users tab ─────────────────────────── */}
           {tab === "Users" && (
@@ -196,10 +196,10 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
         </div>
 
         {showForm && (
-          <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3">
+          <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3 dark:bg-gray-900 dark:shadow-gray-900/50">
             <div>
               <label className="block text-sm font-medium mb-1">Action</label>
-              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 <option value="create_user">Create User</option>
                 <option value="alter_user_password">Reset Password</option>
                 <option value="drop_user">Drop User</option>
@@ -212,9 +212,9 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
               <div>
                 <label className="block text-sm font-medium mb-1">Username</label>
                 {(form.formType === "create_user") ? (
-                  <input value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required placeholder="new_user" />
+                  <input value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required placeholder="new_user" />
                 ) : (
-                  <select value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                  <select value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                     <option value="">Select user</option>
                     {users.map(u => <option key={u.name} value={u.name}>{u.name}</option>)}
                   </select>
@@ -223,13 +223,13 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
               {(form.formType === "create_user" || form.formType === "alter_user_password") && (
                 <div>
                   <label className="block text-sm font-medium mb-1">Password</label>
-                  <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required />
+                  <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required />
                 </div>
               )}
               {form.formType === "grant_role" && (
                 <div>
                   <label className="block text-sm font-medium mb-1">Role</label>
-                  <select value={form.role_name} onChange={e => setForm({ ...form, role_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                  <select value={form.role_name} onChange={e => setForm({ ...form, role_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                     <option value="">Select role</option>
                     {roles.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
@@ -238,7 +238,7 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
               {form.formType === "assign_settings_profile" && (
                 <div>
                   <label className="block text-sm font-medium mb-1">Profile</label>
-                  <select value={form.profile_name} onChange={e => setForm({ ...form, profile_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                  <select value={form.profile_name} onChange={e => setForm({ ...form, profile_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                     <option value="">Select profile</option>
                     {profiles.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
@@ -247,7 +247,7 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
               {form.formType === "assign_quota" && (
                 <div>
                   <label className="block text-sm font-medium mb-1">Quota</label>
-                  <select value={form.quota_name} onChange={e => setForm({ ...form, quota_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                  <select value={form.quota_name} onChange={e => setForm({ ...form, quota_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                     <option value="">Select quota</option>
                     {quotaNames.map(q => <option key={q} value={q}>{q}</option>)}
                   </select>
@@ -256,26 +256,26 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Reason</label>
-              <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Why?" />
+              <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" placeholder="Why?" />
             </div>
             <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">Submit as Proposal</button>
           </form>
         )}
 
-        <div className="bg-white shadow rounded-xl overflow-hidden">
+        <div className="bg-white shadow rounded-xl overflow-hidden dark:bg-gray-900 dark:shadow-gray-900/50">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b"><tr>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Name</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Auth</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Roles</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Default Roles</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Actions</th>
+            <thead className="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700"><tr>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Name</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Auth</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Roles</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Default Roles</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Actions</th>
             </tr></thead>
             <tbody>
               {users.map(u => (
-                <tr key={u.name} className="border-b last:border-0 hover:bg-gray-50">
+                <tr key={u.name} className="border-b last:border-0 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                   <td className="px-4 py-3 font-medium">{u.name}</td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">{u.auth_type || "-"}</td>
+                  <td className="px-4 py-3 text-gray-500 text-xs dark:text-gray-400">{u.auth_type || "-"}</td>
                   <td className="px-4 py-3 text-xs">{u.roles.join(", ") || "-"}</td>
                   <td className="px-4 py-3 text-xs">{u.default_roles.join(", ") || "-"}</td>
                   <td className="px-4 py-3">
@@ -284,7 +284,7 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
                   </td>
                 </tr>
               ))}
-              {users.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No users found. Collect a snapshot first.</td></tr>}
+              {users.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500">No users found. Collect a snapshot first.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -293,19 +293,19 @@ function UsersTab({ users, canCreate, showForm, setShowForm, roles, profiles, qu
       {/* History panel */}
       <div>
         {selectedEntity && (
-          <div className="bg-white shadow rounded-xl p-4">
+          <div className="bg-white shadow rounded-xl p-4 dark:bg-gray-900 dark:shadow-gray-900/50">
             <h3 className="font-semibold mb-2">History: {selectedEntity}</h3>
             {history.length === 0 ? (
-              <p className="text-sm text-gray-400">No history yet.</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">No history yet.</p>
             ) : (
               <div className="space-y-2">
                 {history.map(h => (
-                  <div key={h.id} className="border rounded p-2 text-xs">
+                  <div key={h.id} className="border rounded p-2 text-xs dark:border-gray-700">
                     <div className="flex justify-between">
-                      <span className="font-medium text-blue-700">{h.action}</span>
-                      <span className="text-gray-400">{new Date(h.created_at).toLocaleString()}</span>
+                      <span className="font-medium text-blue-700 dark:text-blue-400">{h.action}</span>
+                      <span className="text-gray-400 dark:text-gray-500">{new Date(h.created_at).toLocaleString()}</span>
                     </div>
-                    {h.details_json && <pre className="mt-1 text-gray-500 whitespace-pre-wrap">{h.details_json}</pre>}
+                    {h.details_json && <pre className="mt-1 text-gray-500 whitespace-pre-wrap rounded px-2 py-1 dark:bg-gray-800 dark:text-gray-400">{h.details_json}</pre>}
                   </div>
                 ))}
               </div>
@@ -352,10 +352,10 @@ function RolesTab({ roles, canCreate, showForm, setShowForm, users, allRoles, su
         </div>
 
         {showForm && (
-          <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3">
+          <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3 dark:bg-gray-900 dark:shadow-gray-900/50">
             <div>
               <label className="block text-sm font-medium mb-1">Action</label>
-              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 <option value="create_role">Create Role</option>
                 <option value="drop_role">Drop Role</option>
                 <option value="grant_role">Grant Role to User/Role</option>
@@ -366,9 +366,9 @@ function RolesTab({ roles, canCreate, showForm, setShowForm, users, allRoles, su
               <div>
                 <label className="block text-sm font-medium mb-1">Role Name</label>
                 {form.formType === "create_role" ? (
-                  <input value={form.role_name} onChange={e => setForm({ ...form, role_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required placeholder="new_role" />
+                  <input value={form.role_name} onChange={e => setForm({ ...form, role_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required placeholder="new_role" />
                 ) : (
-                  <select value={form.role_name} onChange={e => setForm({ ...form, role_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                  <select value={form.role_name} onChange={e => setForm({ ...form, role_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                     <option value="">Select role</option>
                     {allRoles.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
@@ -378,14 +378,14 @@ function RolesTab({ roles, canCreate, showForm, setShowForm, users, allRoles, su
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-1">Target Type</label>
-                    <select value={form.target_type} onChange={e => setForm({ ...form, target_type: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+                    <select value={form.target_type} onChange={e => setForm({ ...form, target_type: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                       <option value="user">User</option>
                       <option value="role">Role</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Target Name</label>
-                    <select value={form.target_name} onChange={e => setForm({ ...form, target_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                    <select value={form.target_name} onChange={e => setForm({ ...form, target_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                       <option value="">Select target</option>
                       {(form.target_type === "user" ? users : allRoles).map(n => <option key={n} value={n}>{n}</option>)}
                     </select>
@@ -395,24 +395,24 @@ function RolesTab({ roles, canCreate, showForm, setShowForm, users, allRoles, su
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Reason</label>
-              <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Why?" />
+              <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" placeholder="Why?" />
             </div>
             <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">Submit as Proposal</button>
           </form>
         )}
 
-        <div className="bg-white shadow rounded-xl overflow-hidden">
+        <div className="bg-white shadow rounded-xl overflow-hidden dark:bg-gray-900 dark:shadow-gray-900/50">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b"><tr>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Name</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Members</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Inherited Roles</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Grants</th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">Actions</th>
+            <thead className="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700"><tr>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Name</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Members</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Inherited Roles</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Grants</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Actions</th>
             </tr></thead>
             <tbody>
               {roles.map(r => (
-                <tr key={r.name} className="border-b last:border-0 hover:bg-gray-50">
+                <tr key={r.name} className="border-b last:border-0 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                   <td className="px-4 py-3 font-medium">{r.name}</td>
                   <td className="px-4 py-3 text-xs">{r.members.join(", ") || "-"}</td>
                   <td className="px-4 py-3 text-xs">{r.inherited_roles.join(", ") || "-"}</td>
@@ -422,7 +422,7 @@ function RolesTab({ roles, canCreate, showForm, setShowForm, users, allRoles, su
                   </td>
                 </tr>
               ))}
-              {roles.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No roles found.</td></tr>}
+              {roles.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500">No roles found.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -430,16 +430,16 @@ function RolesTab({ roles, canCreate, showForm, setShowForm, users, allRoles, su
 
       <div>
         {selectedEntity && (
-          <div className="bg-white shadow rounded-xl p-4">
+          <div className="bg-white shadow rounded-xl p-4 dark:bg-gray-900 dark:shadow-gray-900/50">
             <h3 className="font-semibold mb-2">History: {selectedEntity}</h3>
-            {history.length === 0 ? <p className="text-sm text-gray-400">No history yet.</p> : (
+            {history.length === 0 ? <p className="text-sm text-gray-400 dark:text-gray-500">No history yet.</p> : (
               <div className="space-y-2">{history.map(h => (
-                <div key={h.id} className="border rounded p-2 text-xs">
+                <div key={h.id} className="border rounded p-2 text-xs dark:border-gray-700">
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-700">{h.action}</span>
-                    <span className="text-gray-400">{new Date(h.created_at).toLocaleString()}</span>
+                    <span className="font-medium text-blue-700 dark:text-blue-400">{h.action}</span>
+                    <span className="text-gray-400 dark:text-gray-500">{new Date(h.created_at).toLocaleString()}</span>
                   </div>
-                  {h.details_json && <pre className="mt-1 text-gray-500 whitespace-pre-wrap">{h.details_json}</pre>}
+                  {h.details_json && <pre className="mt-1 text-gray-500 whitespace-pre-wrap rounded px-2 py-1 dark:bg-gray-800 dark:text-gray-400">{h.details_json}</pre>}
                 </div>
               ))}</div>
             )}
@@ -490,18 +490,18 @@ function PrivilegesTab({ canCreate, showForm, setShowForm, users, roles, databas
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3">
+        <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3 dark:bg-gray-900 dark:shadow-gray-900/50">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium mb-1">Action</label>
-              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 <option value="grant_privilege">GRANT</option>
                 <option value="revoke_privilege">REVOKE</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Privilege</label>
-              <select value={form.privilege} onChange={e => setForm({ ...form, privilege: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.privilege} onChange={e => setForm({ ...form, privilege: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 {["SELECT", "INSERT", "ALTER", "CREATE", "DROP", "SHOW", "TRUNCATE", "OPTIMIZE"].map(p =>
                   <option key={p} value={p}>{p}</option>
                 )}
@@ -509,28 +509,28 @@ function PrivilegesTab({ canCreate, showForm, setShowForm, users, roles, databas
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Database</label>
-              <select value={form.database} onChange={e => handleDbChange(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+              <select value={form.database} onChange={e => handleDbChange(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                 <option value="">Select database</option>
                 {databases.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Table (optional)</label>
-              <select value={form.table} onChange={e => setForm({ ...form, table: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.table} onChange={e => setForm({ ...form, table: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 <option value="">All tables (*)</option>
                 {tables.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Target Type</label>
-              <select value={form.target_type} onChange={e => setForm({ ...form, target_type: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.target_type} onChange={e => setForm({ ...form, target_type: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 <option value="user">User</option>
                 <option value="role">Role</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Target Name</label>
-              <select value={form.target_name} onChange={e => setForm({ ...form, target_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+              <select value={form.target_name} onChange={e => setForm({ ...form, target_name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                 <option value="">Select target</option>
                 {(form.target_type === "user" ? users : roles).map(n => <option key={n} value={n}>{n}</option>)}
               </select>
@@ -538,13 +538,13 @@ function PrivilegesTab({ canCreate, showForm, setShowForm, users, roles, databas
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Reason</label>
-            <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Why?" />
+            <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" placeholder="Why?" />
           </div>
           <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">Submit as Proposal</button>
         </form>
       )}
 
-      {!showForm && <p className="text-gray-400 text-sm">Click "Grant / Revoke" to open the privilege wizard. All changes go through proposals.</p>}
+      {!showForm && <p className="text-gray-400 text-sm dark:text-gray-500">Click "Grant / Revoke" to open the privilege wizard. All changes go through proposals.</p>}
     </div>
   );
 }
@@ -573,11 +573,11 @@ function ProfilesTab({ profiles, canCreate, showForm, setShowForm, submitProposa
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3">
+        <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3 dark:bg-gray-900 dark:shadow-gray-900/50">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium mb-1">Action</label>
-              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 <option value="create_settings_profile">Create Profile</option>
                 <option value="alter_settings_profile">Alter Profile</option>
                 <option value="drop_settings_profile">Drop Profile</option>
@@ -586,9 +586,9 @@ function ProfilesTab({ profiles, canCreate, showForm, setShowForm, submitProposa
             <div>
               <label className="block text-sm font-medium mb-1">Profile Name</label>
               {form.formType === "create_settings_profile" ? (
-                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required placeholder="profile_name" />
+                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required placeholder="profile_name" />
               ) : (
-                <select value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                <select value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                   <option value="">Select profile</option>
                   {profiles.map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
                 </select>
@@ -598,31 +598,31 @@ function ProfilesTab({ profiles, canCreate, showForm, setShowForm, submitProposa
           {!form.formType.startsWith("drop") && (
             <div>
               <label className="block text-sm font-medium mb-1">Settings (key = value, one per line)</label>
-              <textarea value={form.settings} onChange={e => setForm({ ...form, settings: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm font-mono" rows={4} placeholder="max_memory_usage = 10000000000&#10;max_execution_time = 60" />
+              <textarea value={form.settings} onChange={e => setForm({ ...form, settings: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm font-mono dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" rows={4} placeholder="max_memory_usage = 10000000000&#10;max_execution_time = 60" />
             </div>
           )}
           <div>
             <label className="block text-sm font-medium mb-1">Reason</label>
-            <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Why?" />
+            <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" placeholder="Why?" />
           </div>
           <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">Submit as Proposal</button>
         </form>
       )}
 
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white shadow rounded-xl overflow-hidden dark:bg-gray-900 dark:shadow-gray-900/50">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b"><tr>
-            <th className="text-left px-4 py-3 font-semibold text-gray-600">Name</th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-600">Settings</th>
+          <thead className="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700"><tr>
+            <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Name</th>
+            <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Settings</th>
           </tr></thead>
           <tbody>
             {profiles.map(p => (
-              <tr key={p.name} className="border-b last:border-0 hover:bg-gray-50">
+              <tr key={p.name} className="border-b last:border-0 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                 <td className="px-4 py-3 font-medium">{p.name}</td>
                 <td className="px-4 py-3 text-xs font-mono">{p.settings.map(s => `${s.name}=${s.value}`).join(", ") || "-"}</td>
               </tr>
             ))}
-            {profiles.length === 0 && <tr><td colSpan={2} className="px-4 py-8 text-center text-gray-400">No settings profiles found.</td></tr>}
+            {profiles.length === 0 && <tr><td colSpan={2} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500">No settings profiles found.</td></tr>}
           </tbody>
         </table>
       </div>
@@ -659,11 +659,11 @@ function QuotasTab({ quotas, canCreate, showForm, setShowForm, submitProposal }:
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3">
+        <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-4 mb-4 space-y-3 dark:bg-gray-900 dark:shadow-gray-900/50">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium mb-1">Action</label>
-              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <select value={form.formType} onChange={e => setForm({ ...form, formType: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                 <option value="create_quota">Create Quota</option>
                 <option value="alter_quota">Alter Quota</option>
                 <option value="drop_quota">Drop Quota</option>
@@ -672,9 +672,9 @@ function QuotasTab({ quotas, canCreate, showForm, setShowForm, submitProposal }:
             <div>
               <label className="block text-sm font-medium mb-1">Quota Name</label>
               {form.formType === "create_quota" ? (
-                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required placeholder="quota_name" />
+                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required placeholder="quota_name" />
               ) : (
-                <select value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" required>
+                <select value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" required>
                   <option value="">Select quota</option>
                   {quotas.map(q => <option key={q.name} value={q.name}>{q.name}</option>)}
                 </select>
@@ -685,7 +685,7 @@ function QuotasTab({ quotas, canCreate, showForm, setShowForm, submitProposal }:
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="block text-sm font-medium mb-1">Interval</label>
-                <select value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm">
+                <select value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
                   {["1 second", "1 minute", "5 minutes", "15 minutes", "1 hour", "1 day", "1 week", "1 month"].map(d =>
                     <option key={d} value={d}>{d}</option>
                   )}
@@ -693,36 +693,36 @@ function QuotasTab({ quotas, canCreate, showForm, setShowForm, submitProposal }:
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Max Queries</label>
-                <input type="number" value={form.maxQueries} onChange={e => setForm({ ...form, maxQueries: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="e.g. 100" />
+                <input type="number" value={form.maxQueries} onChange={e => setForm({ ...form, maxQueries: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" placeholder="e.g. 100" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Max Result Rows</label>
-                <input type="number" value={form.maxResultRows} onChange={e => setForm({ ...form, maxResultRows: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="e.g. 1000000" />
+                <input type="number" value={form.maxResultRows} onChange={e => setForm({ ...form, maxResultRows: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" placeholder="e.g. 1000000" />
               </div>
             </div>
           )}
           <div>
             <label className="block text-sm font-medium mb-1">Reason</label>
-            <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Why?" />
+            <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100" placeholder="Why?" />
           </div>
           <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">Submit as Proposal</button>
         </form>
       )}
 
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white shadow rounded-xl overflow-hidden dark:bg-gray-900 dark:shadow-gray-900/50">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b"><tr>
-            <th className="text-left px-4 py-3 font-semibold text-gray-600">Name</th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-600">Intervals</th>
+          <thead className="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700"><tr>
+            <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Name</th>
+            <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">Intervals</th>
           </tr></thead>
           <tbody>
             {quotas.map(q => (
-              <tr key={q.name} className="border-b last:border-0 hover:bg-gray-50">
+              <tr key={q.name} className="border-b last:border-0 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                 <td className="px-4 py-3 font-medium">{q.name}</td>
                 <td className="px-4 py-3 text-xs">{q.intervals.length} interval(s)</td>
               </tr>
             ))}
-            {quotas.length === 0 && <tr><td colSpan={2} className="px-4 py-8 text-center text-gray-400">No quotas found.</td></tr>}
+            {quotas.length === 0 && <tr><td colSpan={2} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500">No quotas found.</td></tr>}
           </tbody>
         </table>
       </div>

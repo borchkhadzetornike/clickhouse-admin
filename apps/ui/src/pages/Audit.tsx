@@ -70,12 +70,12 @@ export default function Audit() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Audit Log</h1>
+        <h1 className="text-2xl font-bold dark:text-white">Audit Log</h1>
         <div className="flex items-center gap-3">
           <select
             value={source}
             onChange={(e) => setSource(e.target.value as "all" | "auth" | "governance")}
-            className="border rounded-lg px-3 py-2 text-sm"
+            className="border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
           >
             <option value="all">All Sources</option>
             <option value="auth">Auth Service</option>
@@ -84,7 +84,7 @@ export default function Audit() {
           <button
             onClick={loadEvents}
             disabled={loading}
-            className="bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 disabled:opacity-50 transition-colors"
+            className="bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 transition-colors"
           >
             Refresh
           </button>
@@ -92,28 +92,28 @@ export default function Audit() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400 text-sm px-4 py-3 rounded-lg mb-4">
           {error}
         </div>
       )}
 
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white shadow dark:bg-gray-900 dark:shadow-gray-900/50 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700">
             <tr>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Time
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Source
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Action
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Actor
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Details
               </th>
             </tr>
@@ -122,7 +122,7 @@ export default function Audit() {
             {events.map((e, i) => (
               <tr
                 key={`${e.source}-${e.id}-${i}`}
-                className="border-b last:border-0 hover:bg-gray-50"
+                className="border-b last:border-0 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
               >
                 <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                   {new Date(e.created_at).toLocaleString()}
@@ -139,7 +139,7 @@ export default function Audit() {
                   </span>
                 </td>
                 <td className="px-4 py-3 font-medium">{e.action}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 dark:text-gray-300">
                   {e.actor_user_id ?? "-"}
                 </td>
                 <td className="px-4 py-3 text-gray-500 text-xs font-mono truncate max-w-xs">
@@ -157,7 +157,7 @@ export default function Audit() {
               <tr>
                 <td
                   colSpan={5}
-                  className="px-4 py-12 text-center text-gray-400"
+                  className="px-4 py-12 text-center text-gray-400 dark:text-gray-500"
                 >
                   {loading ? "Loading..." : "No audit events found."}
                 </td>

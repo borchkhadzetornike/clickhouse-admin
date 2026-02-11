@@ -83,7 +83,7 @@ export default function Users() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Users</h1>
+        <h1 className="text-2xl font-bold dark:text-white">Users</h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -93,12 +93,12 @@ export default function Users() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400 text-sm px-4 py-3 rounded-lg mb-4">
           {error}
         </div>
       )}
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-lg mb-4">
+        <div className="bg-green-50 border border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400 text-sm px-4 py-3 rounded-lg mb-4">
           {success}
         </div>
       )}
@@ -106,35 +106,35 @@ export default function Users() {
       {showForm && (
         <form
           onSubmit={handleCreate}
-          className="bg-white shadow rounded-xl p-6 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="bg-white shadow dark:bg-gray-900 dark:shadow-gray-900/50 rounded-xl p-6 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4"
         >
           <div>
-            <label className="block text-sm font-medium mb-1">Username</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Username</label>
             <input
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
               Temp Password
             </label>
             <input
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Role</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Role</label>
             <select
               value={form.role}
               onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
             >
               <option value="researcher">Researcher</option>
               <option value="editor">Editor</option>
@@ -152,36 +152,36 @@ export default function Users() {
         </form>
       )}
 
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white shadow dark:bg-gray-900 dark:shadow-gray-900/50 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700">
             <tr>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Username
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Role
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Status
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Created
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="border-b last:border-0 hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium">{u.username}</td>
+              <tr key={u.id} className="border-b last:border-0 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
+                <td className="px-4 py-3 font-medium dark:text-gray-300">{u.username}</td>
                 <td className="px-4 py-3">
                   <select
                     value={u.role}
                     onChange={(e) => handleRoleChange(u, e.target.value)}
-                    className="border rounded px-2 py-1 text-sm"
+                    className="border rounded px-2 py-1 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                   >
                     <option value="researcher">researcher</option>
                     <option value="editor">editor</option>
@@ -192,26 +192,26 @@ export default function Users() {
                   <span
                     className={`px-2 py-0.5 rounded text-xs font-medium ${
                       u.is_active
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                        : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                     }`}
                   >
                     {u.is_active ? "Active" : "Disabled"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                   {new Date(u.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3 space-x-3">
                   <button
                     onClick={() => handleToggleActive(u)}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
                   >
                     {u.is_active ? "Disable" : "Enable"}
                   </button>
                   <button
                     onClick={() => handleResetPassword(u)}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
                   >
                     Reset Password
                   </button>

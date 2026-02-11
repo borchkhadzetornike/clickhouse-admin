@@ -91,7 +91,7 @@ export default function Clusters() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Clusters</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Clusters</h1>
         {user?.role === "admin" && (
           <button
             onClick={() => setShowForm(!showForm)}
@@ -103,7 +103,7 @@ export default function Clusters() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-4">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm px-4 py-3 rounded-lg mb-4">
           {error}
         </div>
       )}
@@ -111,78 +111,78 @@ export default function Clusters() {
       {showForm && (
         <form
           onSubmit={handleCreate}
-          className="bg-white shadow rounded-xl p-6 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="bg-white dark:bg-gray-900 shadow dark:shadow-gray-900/50 rounded-xl p-6 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Name</label>
             <input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100"
               placeholder="production-ch"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Host</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Host</label>
             <input
               value={form.host}
               onChange={(e) => setForm({ ...form, host: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100"
               placeholder="clickhouse.example.com"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Port</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Port</label>
             <input
               value={form.port}
               onChange={(e) => setForm({ ...form, port: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Protocol</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Protocol</label>
             <select
               value={form.protocol}
               onChange={(e) => setForm({ ...form, protocol: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100"
             >
               <option value="http">HTTP</option>
               <option value="https">HTTPS</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               CH Username
             </label>
             <input
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               CH Password
             </label>
             <input
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               Database (optional)
             </label>
             <input
               value={form.database}
               onChange={(e) => setForm({ ...form, database: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100"
               placeholder="default"
             />
           </div>
@@ -197,40 +197,40 @@ export default function Clusters() {
         </form>
       )}
 
-      <div className="bg-white shadow rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 shadow dark:shadow-gray-900/50 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
             <tr>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Name
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Host
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Port
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Protocol
               </th>
-              <th className="text-left px-4 py-3 font-semibold text-gray-600">
+              <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-gray-400">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
             {clusters.map((c) => (
-              <tr key={c.id} className="border-b last:border-0 hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium">{c.name}</td>
-                <td className="px-4 py-3 text-gray-600">{c.host}</td>
-                <td className="px-4 py-3 text-gray-600">{c.port}</td>
-                <td className="px-4 py-3 text-gray-600">{c.protocol}</td>
+              <tr key={c.id} className="border-b dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{c.name}</td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{c.host}</td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{c.port}</td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{c.protocol}</td>
                 <td className="px-4 py-3">
                   {user?.role === "admin" && (
                     <button
                       onClick={() => handleTest(c.id)}
                       disabled={testing[c.id]}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium disabled:opacity-50"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium disabled:opacity-50"
                     >
                       {testing[c.id] ? "Testing..." : "Test Connection"}
                     </button>
@@ -239,8 +239,8 @@ export default function Clusters() {
                     <span
                       className={`ml-3 text-xs font-medium ${
                         testResults[c.id].success
-                          ? "text-green-600"
-                          : "text-red-600"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
                       {testResults[c.id].message}
@@ -253,7 +253,7 @@ export default function Clusters() {
               <tr>
                 <td
                   colSpan={5}
-                  className="px-4 py-12 text-center text-gray-400"
+                  className="px-4 py-12 text-center text-gray-400 dark:text-gray-500"
                 >
                   No clusters configured yet.
                 </td>
