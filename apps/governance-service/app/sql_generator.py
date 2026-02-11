@@ -174,6 +174,44 @@ def _assign_quota(p: dict) -> tuple[str, str | None]:
     return f"ALTER USER {target} QUOTA {quota}", None
 
 
+def _create_row_policy(p: dict) -> tuple[str, str | None]:
+    name = _q(p["name"])
+    db = _q(p["database"])
+    table = _q(p["table"])
+    condition = p.get("condition", "1")
+    restrictive = p.get("restrictive", False)
+    pol_type = "RESTRICTIVE" if restrictive else "PERMISSIVE"
+    sql = f"CREATE ROW POLICY {name} ON {db}.{table} AS {pol_type} FOR SELECT USING {condition}"
+    # Apply to
+    apply_to = p.get("apply_to")
+    if apply_to:
+        targets = ", ".join(_q(t) for t in apply_to)
+        sql += f" TO {targets}"
+    return sql, f"DROP ROW POLICY IF EXISTS {name} ON {db}.{table}"
+
+
+def _alter_row_policy(p: dict) -> tuple[str, str | None]:
+    name = _q(p["name"])
+    db = _q(p["database"])
+    table = _q(p["table"])
+    parts = [f"ALTER ROW POLICY {name} ON {db}.{table}"]
+    condition = p.get("condition")
+    if condition:
+        parts.append(f"USING {condition}")
+    apply_to = p.get("apply_to")
+    if apply_to:
+        targets = ", ".join(_q(t) for t in apply_to)
+        parts.append(f"TO {targets}")
+    return " ".join(parts), None
+
+
+def _drop_row_policy(p: dict) -> tuple[str, str | None]:
+    name = _q(p["name"])
+    db = _q(p["database"])
+    table = _q(p["table"])
+    return f"DROP ROW POLICY IF EXISTS {name} ON {db}.{table}", None
+
+
 _GENERATORS: dict[str, callable] = {
     "create_user": _create_user,
     "alter_user_password": _alter_user_password,
@@ -193,4 +231,7 @@ _GENERATORS: dict[str, callable] = {
     "alter_quota": _alter_quota,
     "drop_quota": _drop_quota,
     "assign_quota": _assign_quota,
+    "create_row_policy": _create_row_policy,
+    "alter_row_policy": _alter_row_policy,
+    "drop_row_policy": _drop_row_policy,
 }

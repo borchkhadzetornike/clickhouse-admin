@@ -222,4 +222,10 @@ export const getQuotaHistory = (name: string, clusterId: number) =>
     params: { cluster_id: clusterId },
   });
 
+export const getRowPolicies = (clusterId: number) =>
+  api.get("/admin/row-policies", { params: { cluster_id: clusterId } });
+
+export const getSQLPreview = (operationType: string, params: Record<string, unknown>) =>
+  api.post("/admin/sql-preview", { operation_type: operationType, params });
+
 export default api;

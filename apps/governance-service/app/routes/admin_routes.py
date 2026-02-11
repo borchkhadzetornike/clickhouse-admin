@@ -18,7 +18,10 @@ from ..schemas import (
     AdminRoleOut,
     AdminSettingsProfileOut,
     AdminQuotaOut,
+    AdminRowPolicyOut,
     EntityHistoryOut,
+    SQLPreviewRequest,
+    SQLPreviewResponse,
 )
 from ..auth import get_current_user, CurrentUser
 from ..clickhouse_client import ClickHouseClient
@@ -312,3 +315,90 @@ def get_quota_history(
         .all()
     )
     return entries
+
+
+# ── Row Policies ───────────────────────────────────────
+
+@router.get("/row-policies", response_model=List[AdminRowPolicyOut])
+async def list_row_policies(
+    cluster_id: int = Query(...),
+    user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    cluster = db.query(Cluster).filter(Cluster.id == cluster_id).first()
+    if not cluster:
+        raise HTTPException(status_code=404, detail="Cluster not found")
+
+    client = _get_client(cluster)
+    try:
+        policies = await client.execute_json("SELECT * FROM system.row_policies")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"ClickHouse error: {e}")
+
+    result = []
+    for p in policies:
+        name = p.get("name", "")
+        apply_to_roles: list[str] = []
+        apply_to_except: list[str] = []
+        # Parse apply_to fields from ClickHouse row_policies table
+        raw_roles = p.get("apply_to_all", 0)
+        roles_list = p.get("apply_to_list", [])
+        if isinstance(roles_list, str):
+            try:
+                roles_list = json.loads(roles_list)
+            except Exception:
+                roles_list = []
+        except_list = p.get("apply_to_except", [])
+        if isinstance(except_list, str):
+            try:
+                except_list = json.loads(except_list)
+            except Exception:
+                except_list = []
+
+        result.append(AdminRowPolicyOut(
+            name=name,
+            database=p.get("database", ""),
+            table=p.get("table", ""),
+            select_filter=p.get("select_filter", ""),
+            restrictive=bool(p.get("is_restrictive", 0)),
+            apply_to_all=bool(raw_roles),
+            apply_to_roles=roles_list if isinstance(roles_list, list) else [],
+            apply_to_except=except_list if isinstance(except_list, list) else [],
+        ))
+    return result
+
+
+# ── SQL Preview ────────────────────────────────────────
+
+@router.post("/sql-preview", response_model=SQLPreviewResponse)
+def preview_sql(
+    req: SQLPreviewRequest,
+    user: CurrentUser = Depends(get_current_user),
+):
+    from ..sql_generator import generate_sql_preview
+
+    sql, comp = generate_sql_preview(req.operation_type, req.params)
+
+    # Generate warnings
+    warnings: list[str] = []
+    params = req.params
+    op = req.operation_type
+
+    # Wildcard privilege warnings
+    if op in ("grant_privilege", "revoke_privilege"):
+        if not params.get("database") or params.get("database") == "*":
+            warnings.append("This grant applies to ALL databases — this is a very broad permission.")
+        if not params.get("table") or params.get("table") == "*":
+            warnings.append("This grant applies to ALL tables in the scope.")
+        priv = (params.get("privilege") or "").upper()
+        admin_privs = {"CREATE USER", "ALTER USER", "DROP USER", "CREATE ROLE", "DROP ROLE",
+                       "GRANT", "SYSTEM", "ACCESS MANAGEMENT"}
+        if priv in admin_privs:
+            warnings.append(f"{priv} is an admin-level privilege — use with caution.")
+
+    # Destructive operation warnings
+    if op.startswith("drop_"):
+        entity = op.replace("drop_", "").replace("_", " ")
+        warnings.append(f"This will permanently DROP the {entity}. This action cannot be undone.")
+
+    return SQLPreviewResponse(sql=sql, compensation_sql=comp, warnings=warnings)

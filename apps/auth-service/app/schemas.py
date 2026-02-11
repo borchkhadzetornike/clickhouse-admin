@@ -35,12 +35,38 @@ class CreateUserRequest(BaseModel):
     username: str
     password: str
     role: str = "researcher"
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+
+    @field_validator("password")
+    @classmethod
+    def password_strength(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
+
+    @field_validator("email")
+    @classmethod
+    def email_format(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if v == "":
+                return None
+            pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            if not re.match(pattern, v):
+                raise ValueError("Invalid email format")
+        return v
 
 
 class UpdateUserRequest(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None
     password: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    profile_picture_url: Optional[str] = None
 
 
 # ── Profile schemas ───────────────────────────────────────

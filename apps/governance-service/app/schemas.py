@@ -465,3 +465,25 @@ class AdminQuotaOut(BaseModel):
     name: str
     intervals: List[dict] = []
     assigned_to: List[str] = []
+
+
+class AdminRowPolicyOut(BaseModel):
+    name: str
+    database: str = ""
+    table: str = ""
+    select_filter: str = ""
+    restrictive: bool = False
+    apply_to_all: bool = False
+    apply_to_roles: List[str] = []
+    apply_to_except: List[str] = []
+
+
+class SQLPreviewRequest(BaseModel):
+    operation_type: str
+    params: dict
+
+
+class SQLPreviewResponse(BaseModel):
+    sql: str
+    compensation_sql: Optional[str] = None
+    warnings: List[str] = []
